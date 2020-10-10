@@ -55,7 +55,7 @@ class Crypto:
                 "timestamp": 0,
                 "price": 0
             }
-            sub_dict["timestamp"] = int(row['Unix Timestamp'])
+            sub_dict["timestamp"] = int(float(row['Unix Timestamp']))
             sub_dict["price"] = (float(row["Open"]) + float(row["Close"]))/2.0 #taking the average price for the time frame
             holder.append(sub_dict)
         oldest_to_newest = list(reversed(holder))

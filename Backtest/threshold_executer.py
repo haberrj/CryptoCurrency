@@ -13,7 +13,6 @@ import threshold_calculator as tc
 import derivative_algorithm as da
 import get_historical_prices as ghp 
 
-arguments = sys.argv
 parser = argparse.ArgumentParser(description="Find the ideal thresholds for any currency.")
 parser.add_argument("-c", "--cash", type=float, required=True, help="The amount of starting cash")
 parser.add_argument("-i", "--currency", type=str, required=True, help="The type of currency (BTC, ETH, LTC")
