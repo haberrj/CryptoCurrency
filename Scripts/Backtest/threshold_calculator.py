@@ -54,14 +54,3 @@ def UpdateProgress(progress):
     text = "\rPercent Complete: [{0}] {1}% {2}".format( "#"*block + "-"*(bar_length-block), progress*100, status)
     sys.stdout.write(text)
     sys.stdout.flush()
-
-# I will come back to commissions since it seems to break it        
-commission = 0.0026 # Kraken has a commission of 0.26%
-Bitcoin = ghp.Crypto("Bitcoin_Hourly", "/home/ronhaber/Documents/CryptoBot/Kraken_BTCEUR_1h.csv", "/home/ronhaber/Documents/CryptoBot/Created_Files/")
-btc_cash = 1000.00
-threshold_array, wallet_array = CalculateThresholds(Bitcoin, btc_cash, commission, 400, 1, 1, 8)
-max_threshold, max_amout = GetMaxThreshold(threshold_array, wallet_array)
-print("The ideal threshold is: ")
-print(max_threshold)
-print("The max amount for that threshold is: ")
-print(max_amout)

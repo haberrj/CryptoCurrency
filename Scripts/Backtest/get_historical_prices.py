@@ -17,13 +17,16 @@ def convert_timestamp_to_date(timestamp):
 class Crypto:
     # This class reads a CSV input and creates a list of dictionaries with the respective price and timestamp
     # There is also a CSV file saved to a desire directory
-    def __init__(self, name, filename, direc):
+    def __init__(self, name, history_data, csv_data, json_data):
         self.name = name
-        self.history_file = filename
+        self.history_file = history_data
+        self.csv_data = csv_data
+        self.json_data = json_data
+        # init methods
         self.dict_values = self.decode_csv()
         self.relevant_info = self.format_dict_values()
-        self.direc = direc
-
+        self.csv_creation = self.CreateNewCSV()
+        
     def decode_csv(self):
         holder = []
         with open(self.history_file) as csvfile:
@@ -56,7 +59,7 @@ class Crypto:
         return oldest_to_newest
 
     def CreateNewCSV(self):
-        new_file_name = self.direc + '/' + self.name + '.csv'
+        new_file_name = self.csv_data + self.name + '.csv'
         keys = self.relevant_info[0].keys()
         with open(new_file_name, 'w') as new_file:
             writer = csv.DictWriter(new_file, keys)
