@@ -29,11 +29,14 @@ class Crypto:
         
     def decode_csv(self):
         holder = []
+        new_holder = []
         with open(self.history_file) as csvfile:
             history_values = csv.DictReader(csvfile)
-            for value in history_values:
+            for value in history_values: 
                 holder.append(value)
-        return holder
+            for i in range(0, 15500): # doing this to above gives problems due to DictReader
+                new_holder.append(holder[i]) # 2 years back
+        return new_holder
 
     def print_dataset_size(self):
         print(len(self.relevant_info))
