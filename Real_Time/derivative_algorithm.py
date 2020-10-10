@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # Author: Ron Haber
-# Date: 6.10.2020
+# Date: 10.10.2020
 # This version will be used for real-time pricing
 # It works incredibly well in the back test
 # I need to determine how often I want to collect prices
@@ -11,7 +11,7 @@ import csv
 import get_historical_prices as ghp
 
 def FirstDerivative2Data(dataset):
-    # Will take from a dataset outline a few data points (every minute or hour not sure)
+    # Will take from a dataset from every hour and compare points
     first_derivative = []
     data_size = len(dataset)
     for i in range(1, data_size):
