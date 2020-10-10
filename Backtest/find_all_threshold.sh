@@ -5,7 +5,7 @@
 # different currencies.
 # The inputs will be the thresholds themselves.
 
-cd ~/CryptoCurrency/
+cd /home/pi/CryptoCurrency/
 git pull
 
 python3 ~/CryptoCurrency/Utility/update_historical_data.py -c BTC
