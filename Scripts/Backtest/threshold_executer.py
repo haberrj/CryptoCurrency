@@ -18,6 +18,7 @@ parser = argparse.ArgumentParser(description="Find the ideal thresholds for any 
 parser.add_argument("-c", "--cash", type=float, required=True, help="The amount of starting cash")
 parser.add_argument("-i", "--currency", type=str, required=True, help="The type of currency (BTC, ETH, LTC")
 parser.add_argument("-t", "--threshold_limits", type=int, nargs=4, required=True, help="The 4 threshold limits for the algorithm")
+parser.add_argument("-p", "--commission", type=float, required=True, help="The commission percentage taken by the broker")
 args = parser.parse_args()
 
 def CurrencyExecution(currency_type, price_path, csv_path, json_path, cash, commission, threshold_limits):
@@ -62,7 +63,7 @@ if __name__ == "__main__":
     threshold_limits = args.threshold_limits
     cash = args.cash
     currency_type = (args.currency).upper()
-    commission = 0.0026
+    commission = args.commission
     threshold, amount, json_file = CurrencyExecution(currency_type, price_path, csv_path, json_path, cash, commission, threshold_limits)
     print("The ideal thresholds are: ", threshold)
     print("That will produce a max amount of: ", "{:,.2f}".format(amount), "€")
