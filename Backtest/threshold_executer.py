@@ -15,7 +15,7 @@ import get_historical_prices as ghp
 
 parser = argparse.ArgumentParser(description="Find the ideal thresholds for any currency.")
 parser.add_argument("-c", "--cash", type=float, required=True, help="The amount of starting cash")
-parser.add_argument("-i", "--currency", type=str, required=True, help="The type of currency (BTC, ETH, LTC")
+parser.add_argument("-i", "--currency", type=str, required=True, help="The type of currency (BTC, ETH, LTC)")
 parser.add_argument("-t", "--threshold_limits", type=int, nargs=4, required=True, help="The 4 threshold limits for the algorithm")
 parser.add_argument("-p", "--commission", type=float, required=True, help="The commission percentage taken by the broker")
 args = parser.parse_args()
