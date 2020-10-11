@@ -55,7 +55,7 @@ def WriteInfoToJson(coin_type, threshold_data, max_amount, json_path):
     print("JSON updated at ", json_path)
 
 if __name__ == "__main__":
-    home = "/media/pi/server/Crypto_Share/Artifacts/"
+    home = "/media/pi/HaberServer/Crypto_Share/Artifacts/"
     price_path = home + "Historical_Price_Docs/"
     csv_path = home + "CSV_Output_Data/"
     json_path = home + "Json_Output_Data/"

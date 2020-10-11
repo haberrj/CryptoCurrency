@@ -24,7 +24,7 @@ args = parser.parse_args()
 
 currency = (args.currency).upper()
 src_url = "https://www.cryptodatadownload.com/cdd/"
-home = "/media/pi/server/"
+home = "/media/pi/HaberServer/"
 file_destination = home + "Crypto_Share/Artifacts/Historical_Price_Docs/"
 
 if(currency == "BTC"):
