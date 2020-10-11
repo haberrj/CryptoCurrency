@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # Kraken Rest API
 #
@@ -15,6 +15,7 @@ import time
 import base64
 import hashlib
 import hmac
+import save_values as sv
 
 if int(platform.python_version_tuple()[0]) > 2:
 	import urllib.request as urllib2
@@ -29,8 +30,8 @@ api_funding = {"DepositMethods", "DepositAddresses", "DepositStatus", "WithdrawI
 api_domain = "https://api.kraken.com"
 api_data = ""
 
-API_Public_Key = "/home/ronhaber/Documents/API_Utils/API_Public_Key"
-API_Private_Key = "/home/ronhaber/Documents/API_Utils/API_Private_Key"
+API_Public_Key = "/media/pi/HaberServer/Crypto_Share/API_Utils/API_Public_Key"
+API_Private_Key = "/media/pi/HaberServer/Crypto_Share/API_Utils/API_Private_Key"
 
 if len(sys.argv) < 2:
 	api_method = "Time"
@@ -87,6 +88,7 @@ except Exception as error:
 
 if '"error":[]' in api_reply:
 	print(api_reply)
+	filename = sv.SaveToFileType(sys.argv, api_reply)
 	sys.exit(0)
 else:
 	print(api_reply)
