@@ -9,7 +9,7 @@ git pull
 
 python3 /home/pi/CryptoCurrency/Real_Time/API_Utils/krakenapi.py Ticker pair=xbteur
 sleep 0.1
-python3 home/pi/CryptoCurrency/Real_Time/API_Utils/krakenapi.py Ticker pair=etheur
+python3 /home/pi/CryptoCurrency/Real_Time/API_Utils/krakenapi.py Ticker pair=etheur
 sleep 0.1
-python3 home/pi/CryptoCurrency/Real_Time/API_Utils/krakenapi.py Ticker pair=ltceur
+python3 /home/pi/CryptoCurrency/Real_Time/API_Utils/krakenapi.py Ticker pair=ltceur
 sleep 0.1
