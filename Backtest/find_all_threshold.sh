@@ -15,7 +15,7 @@ sleep 1
 python3 /home/pi/CryptoCurrency/Utility/update_historical_data.py -c LTC
 sleep 1
 
-python3 /home/pi/CryptoCurrency/Backtest/threshold_executer.py -c 1000.00 -i BTC -t 400 5 5 10 -p 0.0 &
+python3 /home/pi/CryptoCurrency/Backtest/threshold_executer.py -c 1000.00 -i BTC -t 400 2 2 8 -p 0.0 &
 P1=$!
 python3 /home/pi/CryptoCurrency/Backtest/threshold_executer.py -c 1000.00 -i LTC -t 20 2 2 5 -p 0.0 &
 P2=$!
