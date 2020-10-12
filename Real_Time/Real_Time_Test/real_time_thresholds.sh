@@ -5,9 +5,8 @@
 # different currencies.
 # The inputs will be the thresholds themselves.
 
-# cd /home/pi/CryptoCurrency/
-# git pull
-
+cd /home/pi/CryptoCurrency/
+git pull
 
 python3 /home/pi/CryptoCurrency/Real_Time/Real_Time_Test/threshold_executer.py -c 1000.00 -i BTC -t 150 10 10 10 -p 0.00 &
 P1=$!
