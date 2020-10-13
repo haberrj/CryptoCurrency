@@ -47,11 +47,11 @@ class Currency:
     def GetLastCashAmount(self):
         cash = 0.0
         if(self.name == "BTC"):
-            csv_name = self.direc + "BTC_Transactions.csv"
+            csv_name = self.direc + "CSV_Transaction_Data/BTC_Transactions.csv"
         elif(self.name == "ETH"):
-            csv_name = self.direc + "ETH_Transactions.csv"
+            csv_name = self.direc + "CSV_Transaction_Data/ETH_Transactions.csv"
         elif(self.name == "LTC"):
-            csv_name = self.direc + "LTC_Transactions.csv"
+            csv_name = self.direc + "CSV_Transaction_Data/LTC_Transactions.csv"
         else:
             print("Invalid currency")
             return
@@ -67,11 +67,11 @@ class Currency:
     def GetLastCoinAmount(self):
         coin = 0.0
         if(self.name == "BTC"):
-            csv_name = self.direc + "BTC_Transactions.csv"
+            csv_name = self.direc + "CSV_Transaction_Data/BTC_Transactions.csv"
         elif(self.name == "ETH"):
-            csv_name = self.direc + "ETH_Transactions.csv"
+            csv_name = self.direc + "CSV_Transaction_Data/ETH_Transactions.csv"
         elif(self.name == "LTC"):
-            csv_name = self.direc + "LTC_Transactions.csv"
+            csv_name = self.direc + "CSV_Transaction_Data/LTC_Transactions.csv"
         else:
             print("Invalid currency")
             return
@@ -180,11 +180,11 @@ class Currency:
 
     def WriteSaleDataToCSV(self, details):
         if(self.name == "BTC"):
-            csv_name = self.direc + "BTC_Transactions.csv"
+            csv_name = self.direc + "CSV_Transaction_Data/BTC_Transactions.csv"
         elif(self.name == "ETH"):
-            csv_name = self.direc + "ETH_Transactions.csv"
+            csv_name = self.direc + "CSV_Transaction_Data/ETH_Transactions.csv"
         elif(self.name == "LTC"):
-            csv_name = self.direc + "LTC_Transactions.csv"
+            csv_name = self.direc + "CSV_Transaction_Data/LTC_Transactions.csv"
         else:
             print("Invalid currency")
             return
@@ -201,11 +201,11 @@ class Currency:
     
     def WriteLastTransactionJson(self, details):
         if(self.name == "BTC"):
-            json_name = self.direc + "BTC_Last_Transaction.json"
+            json_name = self.direc + "Json_Transaction_Data/BTC_Last_Transaction.json"
         elif(self.name == "ETH"):
-            json_name = self.direc + "ETH_Last_Transaction.json"
+            json_name = self.direc + "Json_Transaction_Data/ETH_Last_Transaction.json"
         elif(self.name == "LTC"):
-            json_name = self.direc + "LTC_Last_Transaction.json"
+            json_name = self.direc + "Json_Transaction_Data/LTC_Last_Transaction.json"
         else:
             print("Invalid currency")
             return
