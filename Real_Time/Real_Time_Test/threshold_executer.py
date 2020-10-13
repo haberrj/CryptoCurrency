@@ -14,6 +14,7 @@ import derivative_algorithm as da
 import currency as ghp 
 
 parser = argparse.ArgumentParser(description="Find the ideal thresholds for any currency.")
+parser.add_argument("-d", "--home", type=str, required=True, help="The directory for artifacts")
 parser.add_argument("-c", "--cash", type=float, required=True, help="The amount of starting cash")
 parser.add_argument("-i", "--currency", type=str, required=True, help="The type of currency (BTC, ETH, LTC)")
 parser.add_argument("-t", "--threshold_limits", type=int, nargs=4, required=True, help="The 4 threshold limits for the algorithm")
@@ -55,7 +56,7 @@ def WriteInfoToJson(coin_type, threshold_data, max_amount, json_path):
     print("JSON updated at ", json_path)
 
 if __name__ == "__main__":
-    home = "/media/pi/HaberServer/Crypto_Share/Real_Time_Artifacts/"
+    home = str(args.home) #"/media/pi/HaberServer/Crypto_Share/Real_Time_Artifacts/"
     price_path = home
     json_path = home + "Json_Output_Data/"
     threshold_limits = args.threshold_limits
