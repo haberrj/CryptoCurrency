@@ -8,10 +8,10 @@
 cd /home/pi/CryptoCurrency/
 git pull
 
-python3 /home/pi/CryptoCurrency/Real_Time/Real_Time_Test/threshold_executer.py -c 1000.00 -i BTC -t 150 10 10 10 -p 0.00 &
+python3 /home/pi/CryptoCurrency/Real_Time/Real_Time_Test/threshold_executer.py -c 1000.00 -i BTC -t 30 30 30 30 -p 0.00 &
 P1=$!
-python3 /home/pi/CryptoCurrency/Real_Time/Real_Time_Test/threshold_executer.py -c 1000.00 -i LTC -t 150 10 10 10 -p 0.00 &
+python3 /home/pi/CryptoCurrency/Real_Time/Real_Time_Test/threshold_executer.py -c 1000.00 -i LTC -t 30 30 30 30 -p 0.00 &
 P2=$!
-python3 /home/pi/CryptoCurrency/Real_Time/Real_Time_Test/threshold_executer.py -c 1000.00 -i ETH -t 150 10 10 10 -p 0.00 &
+python3 /home/pi/CryptoCurrency/Real_Time/Real_Time_Test/threshold_executer.py -c 1000.00 -i ETH -t 30 30 30 30 -p 0.00 &
 P3=$!
 wait $P1 $P2 $P3
