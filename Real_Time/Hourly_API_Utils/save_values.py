@@ -10,7 +10,7 @@ from datetime import datetime
 import time
 import ast
 
-home = "/media/pi/HaberServer/Crypto_Share/Real_Time_Artifacts/Hourly" # This will change going forward but stays for testing
+home = "/media/pi/HaberServer/Crypto_Share/Real_Time_Artifacts/Hourly/" # This will change going forward but stays for testing
 
 def SaveToFileType(arg_list, api_reply):
     api_dict = ast.literal_eval(api_reply)
