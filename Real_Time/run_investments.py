@@ -8,23 +8,24 @@
 
 import os, sys
 import json
-from os.path import expanduser
+import argparse
+import subprocess
 from datetime import datetime
-import derivative_algorithm as da
 import coin_type as ct 
 
-def GetThresholds(currency_type):
-    direc = expanduser("~") + "/Crypto_Share/Artifacts/Json_Output_Data/"
-    if(currency_type.name == "BTC"):
-        file_name = direc + "btc_thresholds.json"
-    elif(currency_type.name == "ETH"):
-        file_name = direc + "eth_thresholds.json"
-    elif(currency_type.name == "ETH"):
-        file_name = direc + "ltc_thresholds.json"
-    else:
-        print("Invalid type")
-        return
-    with open(file_name, 'r') as json_file:
-        data = json.load(json_file)
-    threshold = data["threshold"]
-    return threshold
+# home = "/home/ronhaber/Documents/Crypto_Docs/"
+home = "/media/pi/HaberServer/Crypto_Share/Real_Time_Artifacts/"
+
+parser = argparse.ArgumentParser(description="Find the ideal thresholds for any currency.")
+parser.add_argument("-i", "--currency", type=str, required=True, help="The type of currency (BTC, ETH, LTC)")
+parser.add_argument("-p", "--commission", type=float, required=True, help="The commission percentage taken by the broker")
+
+args = parser.parse_args()
+currency_name = str(args.currency).upper()
+commission = float(args.commission)
+
+crypto_curr = ct.Currency(currency_name, home, commission)
+networth = crypto_curr.DetermineTradeType()
+print('Current Networth is: ', networth, ' €')
+
+

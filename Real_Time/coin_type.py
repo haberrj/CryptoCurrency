@@ -5,6 +5,7 @@
 # This will create a class for the currency to hold relevant data
 
 import os, sys
+import os.path
 import json
 import csv
 from datetime import datetime
@@ -16,7 +17,7 @@ def convert_timestamp_to_date(timestamp):
     return time_holder
 
 def BuyPercentageCurrency(cash, price, commission):
-    percent_currency = amount/price
+    percent_currency = cash/price
     return percent_currency
 
 def SellPercentageCurrency(currency, price, commission):
@@ -24,21 +25,64 @@ def SellPercentageCurrency(currency, price, commission):
     new_amount = amount * (1.0-2.0*commission)
     return new_amount
 
+def CheckIfFileExits(filename):
+    return os.path.isfile(filename)
+
 class Currency:
     # will add more data as things come up
-    def __init__(self, name, data_direc, starting_cash, commission):
+    def __init__(self, name, data_direc, commission):
         self.name = name
         self.direc = data_direc
-        self.current_price = 0 
-        self.last_three_prices = [0,0,0] # ltp[0] is current price required to determine 2 first_deriv values
-        self.first_deriv = [0,0] # required to determine the second derivative (first_deriv[0] is the important one here)
-        self.second_deriv = 0
-        self.cash = cash
-        self.coin = 0
+        self.current_price = 0.0 
+        self.last_three_prices = [0.0,0.0,0.0] # ltp[0] is current price required to determine 2 first_deriv values
+        self.first_deriv = [0.0,0.0] # required to determine the second derivative (first_deriv[0] is the important one here)
+        self.second_deriv = 0.0
+        self.cash = self.GetLastCashAmount()
+        self.coin = self.GetLastCoinAmount()
         self.commission = commission
 
         self.thresholds = self.GetThresholds()
         self.GetPrices()
+    
+    def GetLastCashAmount(self):
+        cash = 0.0
+        if(self.name == "BTC"):
+            csv_name = self.direc + "BTC_Transactions.csv"
+        elif(self.name == "ETH"):
+            csv_name = self.direc + "ETH_Transactions.csv"
+        elif(self.name == "LTC"):
+            csv_name = self.direc + "LTC_Transactions.csv"
+        else:
+            print("Invalid currency")
+            return
+        with open(csv_name, "r") as transaction_data:
+            history_values = csv.DictReader(transaction_data)
+            holder = []
+            for value in history_values: 
+                holder.append(value)
+        transactions = list(reversed(holder))
+        cash = float(transactions[0]["cash"])
+        return cash
+
+    def GetLastCoinAmount(self):
+        coin = 0.0
+        if(self.name == "BTC"):
+            csv_name = self.direc + "BTC_Transactions.csv"
+        elif(self.name == "ETH"):
+            csv_name = self.direc + "ETH_Transactions.csv"
+        elif(self.name == "LTC"):
+            csv_name = self.direc + "LTC_Transactions.csv"
+        else:
+            print("Invalid currency")
+            return
+        with open(csv_name, "r") as transaction_data:
+            history_values = csv.DictReader(transaction_data)
+            holder = []
+            for value in history_values: 
+                holder.append(value)
+        transactions = list(reversed(holder))
+        coin = float(transactions[0]["coin"])
+        return coin
 
     def GetThresholds(self):
         thresholds = []
@@ -52,8 +96,9 @@ class Currency:
             print("Invalid currency")
             return
         with open(json_name, "r") as json_file:
-            data = json_load(json_file)
+            data = json.load(json_file)
         thresholds = data["threshold"]
+        return thresholds
     
     def GetPrices(self):
         prices = []
@@ -73,13 +118,13 @@ class Currency:
                 holder.append(value)
         prices = list(reversed(holder))
         for i in range(0,3):
-            self.last_three_prices[i] = prices[i]["price"]
+            self.last_three_prices[i] = float(prices[i]["price"])
         self.current_price = self.last_three_prices[0]
         return self.current_price
         
     def GetBalance(self):
         coin_value = self.coin * self.current_price
-        balance = cash + coin_value
+        balance = self.cash + coin_value
         return balance
 
     def FirstDerivative(self):
@@ -97,32 +142,73 @@ class Currency:
         price = self.GetPrices()
         first_val = self.FirstDerivative()
         second_val = self.SecondDerivative()
+        self.thresholds = self.GetThresholds()
         if(self.cash > 0):
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
                 self.coin = BuyPercentageCurrency(self.cash, self.current_price, self.commission)
                 self.cash = 0
                 networth = self.GetBalance()
+                print(networth)
                 detailed = {
-                    "time":convert_timestamp_to_date(time.time),
+                    "time":convert_timestamp_to_date(int(time.time())),
                     "transaction": "bought",
                     "price":self.current_price,
                     "cash":self.cash,
                     "coin":self.coin,
                     "networth":networth
                 }
+                self.WriteSaleDataToCSV(detailed)
+                self.WriteLastTransactionJson(detailed)
         if(self.coin > 0):
             if(first_val[0] > self.thresholds[2] and second_val > self.thresholds[3]):
                 self.cash = SellPercentageCurrency(self.coin, self.current_price, self.commission)
                 self.coin = 0
                 networth = self.GetBalance()
                 detailed = {
-                    "time":convert_timestamp_to_date(time.time),
+                    "time":convert_timestamp_to_date(int(time.time())),
                     "transaction": "sold",
                     "price":self.current_price,
                     "cash":self.cash,
                     "coin":self.coin,
                     "networth":networth
                 }
+                self.WriteSaleDataToCSV(detailed)
+                self.WriteLastTransactionJson(detailed)
         # Write the info to a csv somewhere
         networth = self.GetBalance()
         return networth
+
+    def WriteSaleDataToCSV(self, details):
+        if(self.name == "BTC"):
+            csv_name = self.direc + "BTC_Transactions.csv"
+        elif(self.name == "ETH"):
+            csv_name = self.direc + "ETH_Transactions.csv"
+        elif(self.name == "LTC"):
+            csv_name = self.direc + "LTC_Transactions.csv"
+        else:
+            print("Invalid currency")
+            return
+        if(CheckIfFileExits(csv_name)):
+            with open(csv_name,'a') as old_csv:
+                writer = csv.writer(old_csv)
+                writer.writerow([details["time"], details["transaction"], details["price"], details["cash"], details["coin"], details["networth"]])
+        else:
+            with open(csv_name, 'w') as new_csv:
+                writer = csv.DictWriter(new_csv, keys)
+                writer.writeheader()
+                writer.writerow(info_dict)
+        return csv_name
+    
+    def WriteLastTransactionJson(self, details):
+        if(self.name == "BTC"):
+            json_name = self.direc + "BTC_Last_Transaction.json"
+        elif(self.name == "ETH"):
+            json_name = self.direc + "ETH_Last_Transaction.json"
+        elif(self.name == "LTC"):
+            json_name = self.direc + "LTC_Last_Transaction.json"
+        else:
+            print("Invalid currency")
+            return
+        with open(json_name, "w") as new_json:
+            json.dump(details, new_json)
+        return json_name
