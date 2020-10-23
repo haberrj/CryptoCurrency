@@ -8,11 +8,11 @@ cd /home/pi/CryptoCurrency/
 git pull
 
 # Get price info from the ticker
-python3 /home/pi/CryptoCurrency/Real_Time/API_Utils/krakenapi.py Ticker pair=xbteur
+python3 /home/pi/CryptoCurrency/API_Utils/krakenapi.py Ticker pair=xbteur
 sleep 0.1
-python3 /home/pi/CryptoCurrency/Real_Time/API_Utils/krakenapi.py Ticker pair=etheur
+python3 /home/pi/CryptoCurrency/API_Utils/krakenapi.py Ticker pair=etheur
 sleep 0.1
-python3 /home/pi/CryptoCurrency/Real_Time/API_Utils/krakenapi.py Ticker pair=ltceur
+python3 /home/pi/CryptoCurrency/API_Utils/krakenapi.py Ticker pair=ltceur
 sleep 0.1
 
 python3 /home/pi/CryptoCurrency/Real_Time/run_investments.py -d /media/pi/HaberServer/Crypto_Share/Real_Time_Artifacts/ -i BTC -p 0.0
