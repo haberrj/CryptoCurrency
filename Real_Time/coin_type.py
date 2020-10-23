@@ -34,7 +34,7 @@ class Currency:
         self.name = name
         self.direc = data_direc
         self.current_price = 0.0 
-        self.last_three_prices = [0.0,0.0,0.0] # ltp[0] is current price required to determine 2 first_deriv values
+        self.last_three_prices = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] # ltp[0] is current price required to determine 2 first_deriv values
         self.first_deriv = [0.0,0.0] # required to determine the second derivative (first_deriv[0] is the important one here)
         self.second_deriv = 0.0
         self.cash = self.GetLastCashAmount()
@@ -117,7 +117,7 @@ class Currency:
             for value in history_values: 
                 holder.append(value)
         prices = list(reversed(holder))
-        for i in range(0,3):
+        for i in range(0,10):
             self.last_three_prices[i] = float(prices[i]["price"])
         self.current_price = self.last_three_prices[0]
         return self.current_price
@@ -130,7 +130,7 @@ class Currency:
     def FirstDerivative(self):
         price_holder = self.last_three_prices
         for i in range(0, 2): # only iterate twice
-            deriv_holder = price_holder[i] - price_holder[i+1]
+            deriv_holder = (price_holder[i] - price_holder[i+4])/5.0 # captures the price over the last 5 points
             self.first_deriv[i] = deriv_holder
         return self.first_deriv
 
