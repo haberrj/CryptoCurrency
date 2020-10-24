@@ -34,8 +34,8 @@ class Crypto:
             for value in history_values: 
                 holder.append(value)
             size = len(holder)
-            if(size > 5000): # this way the data will be more relevant ~24h
-                for i in range(size-5000, size): # doing this to above gives problems due to DictReader
+            if(size > 10000): # this way the data will be more relevant ~24h
+                for i in range(size-10000, size): # doing this to above gives problems due to DictReader
                     new_holder.append(holder[i]) # more relevant data this way
             else:
                 new_holder = holder
