@@ -40,6 +40,7 @@ class Currency:
         self.cash = self.GetLastCashAmount()
         self.coin = self.GetLastCoinAmount()
         self.commission = commission
+        self.current_holding_price = 0.0 
 
         self.thresholds = self.GetThresholds()
         self.GetPrices()
@@ -159,8 +160,11 @@ class Currency:
                 }
                 self.WriteSaleDataToCSV(detailed)
                 self.WriteLastTransactionJson(detailed)
+                self.current_holding_price = self.current_price
         if(self.coin > 0):
-            if(first_val[0] > self.thresholds[2] and second_val > self.thresholds[3]):
+            if((self.current_holding_price < (self.current_price*0.75)) or (first_val[0] > self.thresholds[2] and second_val > self.thresholds[3])):
+                # the addition of the holding price becoming too low will auto cause a sale of the asset itself
+                # this will prevent severe loss in the case of the underlying losing value
                 self.cash = SellPercentageCurrency(self.coin, self.current_price, self.commission)
                 self.coin = 0
                 networth = self.GetBalance()
