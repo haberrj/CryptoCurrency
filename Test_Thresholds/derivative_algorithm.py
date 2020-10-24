@@ -14,8 +14,8 @@ def FirstDerivative2Data(dataset):
     # Will take from a dataset from every hour and compare points
     first_derivative = []
     data_size = len(dataset)
-    for i in range(5, data_size):
-        deriv_holder = (dataset[i]["price"] - dataset[i-5]["price"])/5.0 # to match with last 5 derivatives being taken
+    for i in range(2, data_size):
+        deriv_holder = (dataset[i]["price"] - dataset[i-3]["price"])/2.0 # to match with last 5 derivatives being taken
         sub_dict = {
             "time":dataset[i]["time"],
             "price_deriv":deriv_holder
