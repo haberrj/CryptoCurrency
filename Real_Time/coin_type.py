@@ -165,19 +165,20 @@ class Currency:
             if((self.current_holding_price < (self.current_price*0.75)) or (first_val[0] > self.thresholds[2] and second_val > self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
-                self.cash = SellPercentageCurrency(self.coin, self.current_price, self.commission)
-                self.coin = 0
-                networth = self.GetBalance()
-                detailed = {
-                    "time":convert_timestamp_to_date(int(time.time())),
-                    "transaction": "sold",
-                    "price":self.current_price,
-                    "cash":self.cash,
-                    "coin":self.coin,
-                    "networth":networth
-                }
-                self.WriteSaleDataToCSV(detailed)
-                self.WriteLastTransactionJson(detailed)
+                if(self.isProfitable(self.current_holding_price, self.current_price, self.commission)):
+                    self.cash = SellPercentageCurrency(self.coin, self.current_price, self.commission)
+                    self.coin = 0
+                    networth = self.GetBalance()
+                    detailed = {
+                        "time":convert_timestamp_to_date(int(time.time())),
+                        "transaction": "sold",
+                        "price":self.current_price,
+                        "cash":self.cash,
+                        "coin":self.coin,
+                        "networth":networth
+                    }
+                    self.WriteSaleDataToCSV(detailed)
+                    self.WriteLastTransactionJson(detailed)
         # Write the info to a csv somewhere
         networth = self.GetBalance()
         return networth
@@ -216,3 +217,14 @@ class Currency:
         with open(json_name, "w") as new_json:
             json.dump(details, new_json)
         return json_name
+
+    def isProfitable(self, last_price, current_price, commission):
+        previous_commission = commission * last_price
+        current_commission = current_price * commission
+        total_comm = previous_commission + current_commission
+        revenue = current_price - last_price
+        profit = revenue - total_comm
+        if(profit >= 0):
+            return True
+        else:
+            return False
