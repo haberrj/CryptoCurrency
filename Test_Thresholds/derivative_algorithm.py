@@ -39,13 +39,16 @@ def SecondDerivative2Data(first_deriv):
 def BuyPercentageCurrency(amount, price, commission):
     # This will call the api to buy this asset
     percent_currency = amount/price
-    return percent_currency
+    w_commission = percent_currency * (1.0 - commission)
+    paid = percent_currency - w_commission 
+    return percent_currency, paid
 
 def SellPercentageCurrency(currency, price, commission):
     # This will call the api to sell this asset
     amount = price*currency
-    new_amount = amount * (1.0-2.0*commission)
-    return new_amount
+    new_amount = amount * (1.0 - commission)
+    paid = amount - new_amount
+    return new_amount, paid
 
 def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commission, thresholds):
     # Thresholds are the thresholds for buying and selling
@@ -70,7 +73,7 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
         if(cash > 0): # >0 since I have no idea if I'll be negative
             if(first_val < first_buy_thresh and second_val > second_buy_thresh):
                 # This part will change to send a buy command to the api
-                wallet = BuyPercentageCurrency(cash, price, commission)
+                wallet, paid = BuyPercentageCurrency(cash, price, commission)
                 # Below will be taken from the api and be filled that way
                 cash = 0
                 detailed = {
@@ -79,28 +82,42 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
                     "price":price,
                     "cash":cash,
                     "coin":wallet,
-                    "networth":SellPercentageCurrency(wallet, price, commission)
+                    "networth":SellPercentageCurrency(wallet, price, commission)[0],
+                    "commission":paid
                 }
                 last_buy_price = price
                 transaction_data.append(detailed)
         if(wallet > 0):
             if(first_val > first_sell_thresh and second_val < second_sell_thresh):
-                # This part will change to send a buy command to the api 
-                cash = SellPercentageCurrency(wallet, price, commission)
-                # This part will change to send a buy command to the api
-                wallet = 0
-                detailed = {
-                    "time":ghp.convert_timestamp_to_date(time),
-                    "transaction": "sold",
-                    "price":price,
-                    "cash":cash,
-                    "coin":wallet,
-                    "networth": cash
-                }
-                transaction_data.append(detailed)
+                # This part will change to send a sell command to the api 
+                if(CheckProfitability(last_buy_price, price, commission) or (last_buy_price < (price * 0.98))):
+                    cash, paid = SellPercentageCurrency(wallet, price, commission)
+                    # This part will change to send a sell command to the api
+                    wallet = 0
+                    detailed = {
+                        "time":ghp.convert_timestamp_to_date(time),
+                        "transaction": "sold",
+                        "price":price,
+                        "cash":cash,
+                        "coin":wallet,
+                        "networth": cash,
+                        "commission":paid
+                    }
+                    transaction_data.append(detailed)
     try:
         final = transaction_data[-1]["networth"]
     except IndexError:
         final = current_amount
     return transaction_data, final
 
+def CheckProfitability(last_price, current_price, commission):
+    previous_commission = commission * last_price
+    current_commission = current_price * commission
+    total_comm = previous_commission + current_commission
+    revenue = current_price - last_price
+    profit = revenue - total_comm
+    if(profit >= 0):
+        # This will make the system only choose profitable transactions
+        return True
+    else:
+        return False

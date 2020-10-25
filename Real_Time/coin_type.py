@@ -219,7 +219,7 @@ class Currency:
             json.dump(details, new_json)
         return json_name
 
-    def isProfitable(self, last_price, current_price, commission, networth):
+    def isProfitable(self, last_price, current_price, commission):
         previous_commission = commission * last_price
         current_commission = current_price * commission
         total_comm = previous_commission + current_commission
