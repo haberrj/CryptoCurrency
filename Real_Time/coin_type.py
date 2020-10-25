@@ -17,12 +17,12 @@ def convert_timestamp_to_date(timestamp):
     return time_holder
 
 def BuyPercentageCurrency(cash, price, commission):
-    percent_currency = cash/price
+    percent_currency = cash/price * (1.0-commission)
     return percent_currency
 
 def SellPercentageCurrency(currency, price, commission):
     amount = price*currency
-    new_amount = amount * (1.0-2.0*commission)
+    new_amount = amount * (1.0-commission)
     return new_amount
 
 def CheckIfFileExits(filename):
@@ -130,8 +130,8 @@ class Currency:
 
     def FirstDerivative(self):
         price_holder = self.last_three_prices
-        for i in range(0, 2): # only iterate twice
-            deriv_holder = (price_holder[i] - price_holder[i+4])/5.0 # captures the price over the last 5 points
+        for i in range(0, 2): # only iterate 2 times
+            deriv_holder = (price_holder[i] - price_holder[i+2])/3.0 # captures the price over the last 3 points
             self.first_deriv[i] = deriv_holder
         return self.first_deriv
 
@@ -165,7 +165,8 @@ class Currency:
             if((self.current_holding_price < (self.current_price*0.75)) or (first_val[0] > self.thresholds[2] and second_val > self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
-                if(self.isProfitable(self.current_holding_price, self.current_price, self.commission)):
+                if((self.isProfitable(self.current_holding_price, self.current_price, self.commission)) or (self.current_holding_price < (self.current_price*0.98))):
+                    # This will only sell if the current holding is profitable or if the above values are 
                     self.cash = SellPercentageCurrency(self.coin, self.current_price, self.commission)
                     self.coin = 0
                     networth = self.GetBalance()
@@ -218,13 +219,14 @@ class Currency:
             json.dump(details, new_json)
         return json_name
 
-    def isProfitable(self, last_price, current_price, commission):
+    def isProfitable(self, last_price, current_price, commission, networth):
         previous_commission = commission * last_price
         current_commission = current_price * commission
         total_comm = previous_commission + current_commission
         revenue = current_price - last_price
         profit = revenue - total_comm
         if(profit >= 0):
+            # This will make the system only choose profitable transactions
             return True
         else:
             return False
