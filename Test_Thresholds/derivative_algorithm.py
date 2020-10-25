@@ -40,8 +40,8 @@ def BuyPercentageCurrency(amount, price, commission):
     # This will call the api to buy this asset
     percent_currency = amount/price
     w_commission = percent_currency * (1.0 - commission)
-    paid = percent_currency - w_commission 
-    return percent_currency, paid
+    paid = (percent_currency * price) - (w_commission * price)
+    return w_commission, paid
 
 def SellPercentageCurrency(currency, price, commission):
     # This will call the api to sell this asset

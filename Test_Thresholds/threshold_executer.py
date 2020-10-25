@@ -27,7 +27,6 @@ def CurrencyExecution(currency_type, price_path, json_path, cash, commission, th
         price_path = price_path + "BTC_Realtime.csv"
         json_path = json_path + "btc_thresholds.json" # Use the multiple jsons for now but need to fix later into 1 big one
         Coin = ghp.Crypto("BTC", price_path, json_path)
-        commission = commission # Since there is a problem with entering a comission but seems to be only for bitcoin
     elif(currency_type == "ETH"):
         price_path = price_path + "ETH_Realtime.csv"
         json_path = json_path + "eth_thresholds.json"
@@ -104,4 +103,4 @@ if __name__ == "__main__":
     threshold, amount, json_file = CurrencyExecution(currency_type, price_path, json_path, cash, commission, threshold_limits)
     print("The ideal thresholds are: ", threshold)
     print("That will produce a max amount of: ", "{:,.2f}".format(amount), "€")
-    # ThresholdLog(currency_type, price_path, json_path, cash, commission, threshold)
+    ThresholdLog(currency_type, price_path, json_path, cash, commission, threshold)

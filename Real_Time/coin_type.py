@@ -17,13 +17,16 @@ def convert_timestamp_to_date(timestamp):
     return time_holder
 
 def BuyPercentageCurrency(cash, price, commission):
-    percent_currency = cash/price * (1.0-commission)
-    return percent_currency
+    percent_currency = cash/price
+    w_commission = percent_currency * (1.0 - commission)
+    paid = (percent_currency * price) - (w_commission * price)
+    return w_commission, paid
 
 def SellPercentageCurrency(currency, price, commission):
     amount = price*currency
-    new_amount = amount * (1.0-commission)
-    return new_amount
+    new_amount = amount * (1.0 - commission)
+    paid = amount - new_amount
+    return new_amount, paid
 
 def CheckIfFileExits(filename):
     return os.path.isfile(filename)
@@ -146,7 +149,7 @@ class Currency:
         self.thresholds = self.GetThresholds()
         if(self.cash > 0):
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
-                self.coin = BuyPercentageCurrency(self.cash, self.current_price, self.commission)
+                self.coin, paid = BuyPercentageCurrency(self.cash, self.current_price, self.commission)
                 self.cash = 0
                 networth = self.GetBalance()
                 print(networth)
@@ -156,7 +159,8 @@ class Currency:
                     "price":self.current_price,
                     "cash":self.cash,
                     "coin":self.coin,
-                    "networth":networth
+                    "networth":networth,
+                    "commission": paid
                 }
                 self.WriteSaleDataToCSV(detailed)
                 self.WriteLastTransactionJson(detailed)
@@ -167,7 +171,7 @@ class Currency:
                 # this will prevent severe loss in the case of the underlying losing value
                 if((self.isProfitable(self.current_holding_price, self.current_price, self.commission)) or (self.current_holding_price < (self.current_price*0.98))):
                     # This will only sell if the current holding is profitable or if the above values are 
-                    self.cash = SellPercentageCurrency(self.coin, self.current_price, self.commission)
+                    self.cash, paid = SellPercentageCurrency(self.coin, self.current_price, self.commission)
                     self.coin = 0
                     networth = self.GetBalance()
                     detailed = {
@@ -176,7 +180,8 @@ class Currency:
                         "price":self.current_price,
                         "cash":self.cash,
                         "coin":self.coin,
-                        "networth":networth
+                        "networth":networth,
+                        "commission": paid
                     }
                     self.WriteSaleDataToCSV(detailed)
                     self.WriteLastTransactionJson(detailed)
