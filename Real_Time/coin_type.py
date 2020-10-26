@@ -166,7 +166,7 @@ class Currency:
                 self.WriteLastTransactionJson(detailed)
                 self.current_holding_price = self.current_price
         if(self.coin > 0):
-            if((self.current_holding_price < (self.current_price*0.75)) or (first_val[0] > self.thresholds[2] and second_val > self.thresholds[3])):
+            if((self.current_holding_price < (self.current_price*0.75)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
                 if((self.isProfitable(self.current_holding_price, self.current_price, self.commission)) or (self.current_holding_price < (self.current_price*0.98))):
