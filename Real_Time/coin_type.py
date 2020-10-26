@@ -134,7 +134,7 @@ class Currency:
     def FirstDerivative(self):
         price_holder = self.last_three_prices
         for i in range(0, 2): # only iterate 2 times
-            deriv_holder = (price_holder[i] - price_holder[i+2])/3.0 # captures the price over the last 3 points
+            deriv_holder = (price_holder[i] - price_holder[i+1])/1.0 # captures the price over the last 3 points
             self.first_deriv[i] = deriv_holder
         return self.first_deriv
 

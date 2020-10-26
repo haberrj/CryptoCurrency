@@ -40,7 +40,6 @@ def CurrencyExecution(currency_type, price_path, json_path, cash, commission, th
         sys.exit()
     threshold_array, wallet_array = tc.CalculateThresholds(Coin, cash, commission, 
                                     threshold_limits[0], threshold_limits[1], threshold_limits[2], threshold_limits[3])
-    print(type(wallet_array[0]))
     max_threshold, max_amount = tc.GetMaxThreshold(threshold_array, wallet_array)
     WriteInfoToJson(Coin, max_threshold, max_amount, json_path)
     return max_threshold, max_amount, json_path
@@ -62,7 +61,6 @@ def ThresholdLog(currency_type, price_path, json_path, cash, commission, thresho
         price_path = price_path + "BTC_Realtime.csv"
         json_path = json_path + "btc_thresholds.json" # Use the multiple jsons for now but need to fix later into 1 big one
         Coin = ghp.Crypto("BTC", price_path, json_path)
-        commission = 0 # Since there is a problem with entering a comission but seems to be only for bitcoin
     elif(currency_type == "ETH"):
         csv_path = price_path + "ETH_Transactions.csv"
         price_path = price_path + "ETH_Realtime.csv"
