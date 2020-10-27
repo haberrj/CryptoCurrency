@@ -43,7 +43,7 @@ class Currency:
         self.cash = self.GetLastCashAmount()
         self.coin = self.GetLastCoinAmount()
         self.commission = commission
-        self.current_holding_price = 0.0 
+        self.current_holding_price = self.GetCurrentHoldingPrice() # initializing this value to make sure it is correctly set
 
         self.thresholds = self.GetThresholds()
         self.GetPrices()
