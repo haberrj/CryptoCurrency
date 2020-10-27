@@ -48,8 +48,7 @@ class Currency:
         self.thresholds = self.GetThresholds()
         self.GetPrices()
     
-    def GetLastCashAmount(self):
-        cash = 0.0
+    def ReadPreviousTransactions(self):
         if(self.name == "BTC"):
             csv_name = self.direc + "CSV_Transaction_Data/BTC_Transactions.csv"
         elif(self.name == "ETH"):
@@ -65,27 +64,32 @@ class Currency:
             for value in history_values: 
                 holder.append(value)
         transactions = list(reversed(holder))
-        cash = float(transactions[0]["cash"])
+        return transactions
+
+    def GetCurrentHoldingPrice(self):
+        transactions = self.ReadPreviousTransactions()
+        try:
+            price = float(transactions[0]["price"])
+        except ValueError:
+            price = 0
+        return price
+    
+    def GetLastCashAmount(self):
+        cash = 0.0
+        transactions = self.ReadPreviousTransactions()
+        try:
+            cash = float(transactions[0]["cash"])
+        except ValueError:
+            cash = 0.0
         return cash
 
     def GetLastCoinAmount(self):
         coin = 0.0
-        if(self.name == "BTC"):
-            csv_name = self.direc + "CSV_Transaction_Data/BTC_Transactions.csv"
-        elif(self.name == "ETH"):
-            csv_name = self.direc + "CSV_Transaction_Data/ETH_Transactions.csv"
-        elif(self.name == "LTC"):
-            csv_name = self.direc + "CSV_Transaction_Data/LTC_Transactions.csv"
-        else:
-            print("Invalid currency")
-            return
-        with open(csv_name, "r") as transaction_data:
-            history_values = csv.DictReader(transaction_data)
-            holder = []
-            for value in history_values: 
-                holder.append(value)
-        transactions = list(reversed(holder))
-        coin = float(transactions[0]["coin"])
+        transactions = self.ReadPreviousTransactions()
+        try:
+            coin = float(transactions[0]["coin"])
+        except ValueError:
+            coin = 0.0
         return coin
 
     def GetThresholds(self):
@@ -166,6 +170,7 @@ class Currency:
                 self.WriteLastTransactionJson(detailed)
                 self.current_holding_price = self.current_price
         if(self.coin > 0):
+            self.current_holding_price = self.GetCurrentHoldingPrice() # need to set this value otherwise it will be equal to zero and the whole thing will fail
             if((self.current_holding_price < (self.current_price*0.75)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
