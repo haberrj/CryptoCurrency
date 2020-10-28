@@ -38,8 +38,6 @@ class Currency:
         self.direc = data_direc
         self.current_price = 0.0 
         self.last_three_prices = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] # ltp[0] is current price required to determine 2 first_deriv values
-        self.first_deriv = [0.0,0.0] # required to determine the second derivative (first_deriv[0] is the important one here)
-        self.second_deriv = 0.0
         self.cash = self.GetLastCashAmount()
         self.coin = self.GetLastCoinAmount()
         self.commission = commission
@@ -47,6 +45,8 @@ class Currency:
 
         self.thresholds = self.GetThresholds()
         self.GetPrices()
+        self.first_deriv = self.FirstDerivative() # required to determine the second derivative (first_deriv[0] is the important one here)
+        self.second_deriv = self.SecondDerivative(self.first_deriv)
     
     def ReadPreviousTransactions(self):
         if(self.name == "BTC"):
@@ -136,20 +136,33 @@ class Currency:
         return balance
 
     def FirstDerivative(self):
+        sample = 2
+        deriv_array = []
         price_holder = self.last_three_prices
-        for i in range(0, 2): # only iterate 2 times
-            deriv_holder = (price_holder[i] - price_holder[i+1])/1.0 # captures the price over the last 3 points
-            self.first_deriv[i] = deriv_holder
-        return self.first_deriv
+        try:
+            for i in range(0, sample + 1):
+                deriv_holder = (price_holder[i] - price_holder[i+sample])/float(sample) # captures the price over the last sample points
+                deriv_array.append(deriv_holder)
+        except IndexError:
+            size = len(price_holder)
+            for i in range(0, size):
+                deriv_holder = (price_holder[i] - price_holder[i+((size-1)/2)])/float(size/2) # captures the price over the last sample points
+                deriv_array.append(deriv_holder)
+        return deriv_array
 
-    def SecondDerivative(self):
-        self.second_deriv = self.first_deriv[0] - self.first_deriv[1]
-        return self.second_deriv
+    def SecondDerivative(self, first_deriv):
+        sample = 2
+        try:
+            second_deriv = (first_deriv[0] - first_deriv[sample])/float(sample)
+        except IndexError:
+            size = len(first_deriv)
+            second_deriv = (first_deriv[0] - first_deriv[size-1])/float(size)
+        return second_deriv
 
     def DetermineTradeType(self):
         price = self.GetPrices()
         first_val = self.FirstDerivative()
-        second_val = self.SecondDerivative()
+        second_val = self.SecondDerivative(first_val)
         self.thresholds = self.GetThresholds()
         if(self.cash > 0):
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
