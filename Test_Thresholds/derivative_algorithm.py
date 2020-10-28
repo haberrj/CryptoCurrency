@@ -11,11 +11,12 @@ import csv
 import currency as ghp
 
 def FirstDerivative2Data(dataset):
+    sample = 2 # will sample the deriv from the past 3 prices and divide accordingly
     # Will take from a dataset from every hour and compare points
     first_derivative = []
     data_size = len(dataset)
-    for i in range(2, data_size):
-        deriv_holder = (dataset[i]["price"] - dataset[i-1]["price"])/1.0 # to match with last 5 derivatives being taken
+    for i in range(sample, data_size):
+        deriv_holder = (dataset[i]["price"] - dataset[i-sample]["price"])/float(sample) # sampling method
         sub_dict = {
             "time":dataset[i]["time"],
             "price_deriv":deriv_holder
@@ -25,10 +26,11 @@ def FirstDerivative2Data(dataset):
 
 def SecondDerivative2Data(first_deriv):
     # Will execute for every first derivative
+    sample = 2
     second_derivative = []
     data_size = len(first_deriv)
-    for i in range(1, data_size):
-        deriv_holder = first_deriv[i]["price_deriv"] - first_deriv[i-1]["price_deriv"]
+    for i in range(sample, data_size):
+        deriv_holder = (first_deriv[i]["price_deriv"] - first_deriv[i-sample]["price_deriv"])/float(sample) # similar sampling method the above
         sub_dict = {
             "time":first_deriv[i]["time"],
             "price_deriv":deriv_holder
@@ -90,20 +92,21 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
         if(wallet > 0):
             if(first_val > first_sell_thresh and second_val < second_sell_thresh):
                 # This part will change to send a sell command to the api 
-                if(CheckProfitability(last_buy_price, price, commission) or (last_buy_price < (price * 0.98))):
-                    cash, paid = SellPercentageCurrency(wallet, price, commission)
-                    # This part will change to send a sell command to the api
-                    wallet = 0
-                    detailed = {
-                        "time":ghp.convert_timestamp_to_date(time),
-                        "transaction": "sold",
-                        "price":price,
-                        "cash":cash,
-                        "coin":wallet,
-                        "networth": cash,
-                        "commission":paid
-                    }
-                    transaction_data.append(detailed)
+                #if(CheckProfitability(last_buy_price, price, commission) or (last_buy_price < (price * 0.98))):
+                # removed the profitability since I want just the buy indices
+                cash, paid = SellPercentageCurrency(wallet, price, commission)
+                # This part will change to send a sell command to the api
+                wallet = 0
+                detailed = {
+                    "time":ghp.convert_timestamp_to_date(time),
+                    "transaction": "sold",
+                    "price":price,
+                    "cash":cash,
+                    "coin":wallet,
+                    "networth": cash,
+                    "commission":paid
+                }
+                transaction_data.append(detailed)
     try:
         final = transaction_data[-1]["networth"]
     except IndexError:
