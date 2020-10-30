@@ -2,16 +2,139 @@
 
 # Author: Ron Haber
 # Date: 30.10.2020
-# This script will grab the required API key information
+# This script will grab the required API key information and other required utilities
 
-import os
+import os, sys
+import time
+from datetime import datetime
+from binance.client import Client
+from binance.enums import *
+from binance.exceptions import BinanceAPIException, BinanceOrderException
 
-home = "/home/ronhaber/API_Utils/"
+home = "/home/ronhaber/Documents/API_Utils/"
 
-def GetAPIKeys(secret_file, public_file):
-    with open(secret_file, 'r') as secret:
-        secret_key = secret.read()
-    with open(public_file, 'r') as public:
-        public_key = public.read()
-    return public_key, secret_key
+def convert_timestamp_to_date(timestamp):
+    time_holder = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    return time_holder
 
+class API_Client:
+    def __init__(self, direc, demo_bool):
+        self.home = direc
+        self.api_public, self.api_secret = self.GetAPIKeys()
+        self.demo = demo_bool
+        self.isDemoBool()
+        self.client = self.ConnectToClient()
+        # self.TopUpBNB() # will add this later once this ready to be used and I have money in the account
+
+    def ConnectToClient(self):
+        client = Client(self.api_public, self.api_secret)
+        if(client.get_account() == ''):
+            print("Could not connect to account. Please try again")
+            sys.exit()
+        return client
+
+    def GetLatestPrice(self, name):
+        ticker = name + "EUR" # Always gets the value in Euros
+        values = self.client.get_ticker(symbol=ticker)
+        info = {
+            "time": convert_timestamp_to_date(int(time.time())),
+            "price": values["lastPrice"],
+            "bid": values["bidPrice"],
+            "ask": values["askPrice"]
+        }
+        return info
+
+    def BuyItem(self, name, quantity):
+        # Will execute the fastest possible transaction
+        ticker = name + "EUR"
+        try:
+            buy_order_market = self.client.create_test_order(
+                symbol=ticker,
+                side='BUY',
+                type='MARKET',
+                quantity=quantity
+            )
+        except BinanceAPIException as e:
+            print(e)
+            print("False Call")
+            sys.exit()
+        except BinanceOrderException as e:
+            print(e)
+            print("False Call")
+            sys.exit()
+        order_info = {
+            "time": convert_timestamp_to_date(int(time.time())),
+            "id": buy_order_market["orderId"],
+            "price": buy_order_market["price"],
+            "status": buy_order_market["status"],
+            "coin": buy_order_market["executedQty"],
+            "type": buy_order_market["side"]
+        }
+        return order_info
+    
+    def SellItem(self, name, quantity):
+        # Will execute the fastest possible transaction
+        ticker = name + "EUR"
+        try:
+            sell_order_market = self.client.create_order(
+                symbol=ticker,
+                side='SELL',
+                type='MARKET',
+                quantity=quantity
+            )
+        except BinanceAPIException as e:
+            print(e)
+            print("False Call")
+            sys.exit()
+        except BinanceOrderException as e:
+            print(e)
+            print("False Call")
+            sys.exit()
+        order_info = {
+            "time": convert_timestamp_to_date(int(time.time())),
+            "id": sell_order_market["orderId"],
+            "price": sell_order_market["price"],
+            "status": sell_order_market["status"],
+            "coin": sell_order_market["executedQty"],
+            "type": sell_order_market["side"]
+        }
+        return order_info
+
+    def GetAccountDetails(self):
+        return self.client.get_account()
+    
+    def GetAssetBalance(self, name):
+        return self.client.get_asset_balance(asset=name)
+
+    def TopUpBNB(self):
+        # Keeps me having a BNB balance to have the commission as low as possible
+        min_balance = 1 # minimum 1 BNB at all times
+        top_up = 1.5
+        bnb_balance = self.GetAssetBalance("BNB")
+        bnb_balance = float(bnb_balance['free'])
+        if (bnb_balance < min_balance):
+            qty = round((top_up - bnb_balance), 2)
+            order_details = self.BuyItem("BNB", qty)
+            return order_details
+        return
+
+    def isDemoBool(self):
+        if(self.demo):
+            client.API_URL = 'https://testnet.binance.vision/api'
+        return True
+    
+    def GetAPIKeys(self):
+        public_file = self.home + 'API_Binance_public_key'
+        secret_file = self.home + 'API_Binance_secret_key'
+        with open(secret_file, 'r') as secret:
+            secret_key = secret.read()
+            secret_key = secret_key[:-1]
+        with open(public_file, 'r') as public:
+            public_key = public.read()
+            public_key = public_key[:-1]
+        return public_key, secret_key
+
+
+client = API_Client(home, False)
+price = client.GetLatestPrice("BTC")
+# print(client.GetLatestPrice("LINK")) I need to think of a different coin to sub LTC

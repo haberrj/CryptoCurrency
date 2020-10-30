@@ -92,7 +92,7 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
         if(wallet > 0):
             if(first_val > first_sell_thresh and second_val < second_sell_thresh):
                 # This part will change to send a sell command to the api 
-                if(CheckProfitability(last_buy_price, price, commission) or (last_buy_price < (price * 0.99))):
+                if(CheckProfitability(last_buy_price, price, commission) or (last_buy_price < (price * 0.995))):
                     # removed the profitability since I want just the buy indices
                     cash, paid = SellPercentageCurrency(wallet, price, commission)
                     # This part will change to send a sell command to the api
