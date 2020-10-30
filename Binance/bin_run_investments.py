@@ -11,6 +11,7 @@ import csv
 import json
 import time
 import API.api_utils as au
+import Algorithm.coin_type as ct
 
 def CheckIfFileExits(filename):
     return os.path.isfile(filename)
@@ -47,6 +48,18 @@ def WriteHistoryCSV(direc, client, coins):
                 writer.writerow(coin)
         files.append(filename)
     return files
+
+def ExecuteRealTimeDemo(names, data_direc, commission):
+    execs = []
+    for name in names:
+        coin = ct.Currency(name, data_direc, commission)
+        networth = coin.DetermineTradeType()
+        details = {
+            "name": name,
+            "networth": networth
+        }
+        execs.append(details)
+    return execs
 
 client = au.API_Client("/home/ronhaber/Documents/API_Utils/", False)
 names = ["BTC", "ETH", "BNB"]

@@ -49,21 +49,17 @@ class Currency:
         self.second_deriv = self.SecondDerivative(self.first_deriv)
     
     def ReadPreviousTransactions(self):
-        if(self.name == "BTC"):
-            csv_name = self.direc + "CSV_Transaction_Data/BTC_Transactions.csv"
-        elif(self.name == "ETH"):
-            csv_name = self.direc + "CSV_Transaction_Data/ETH_Transactions.csv"
-        elif(self.name == "LTC"):
-            csv_name = self.direc + "CSV_Transaction_Data/LTC_Transactions.csv"
+        csv_name = direc + "CSV_Transaction_Data/" + self.name + "_Transactions.csv"
+        if(CheckIfFileExits(csv_name)):
+            with open(csv_name, "r") as transaction_data:
+                history_values = csv.DictReader(transaction_data)
+                holder = []
+                for value in history_values: 
+                    holder.append(value)
+            transactions = list(reversed(holder))
         else:
-            print("Invalid currency")
-            return
-        with open(csv_name, "r") as transaction_data:
-            history_values = csv.DictReader(transaction_data)
-            holder = []
-            for value in history_values: 
-                holder.append(value)
-        transactions = list(reversed(holder))
+            print("Invalid Name")
+            sys.exit()
         return transactions
 
     def GetCurrentHoldingPrice(self):
@@ -94,40 +90,32 @@ class Currency:
 
     def GetThresholds(self):
         thresholds = []
-        if(self.name == "BTC"):
-            json_name = self.direc + "Json_Output_Data/btc_thresholds.json"
-        elif(self.name == "ETH"):
-            json_name = self.direc + "Json_Output_Data/eth_thresholds.json"
-        elif(self.name == "LTC"):
-            json_name = self.direc + "Json_Output_Data/ltc_thresholds.json"
+        json_name = self.direc + "Json_Output_Data/" + self.name.lower() + "_thresholds.json"
+        if(CheckIfFileExits(json_name)):
+            with open(json_name, "r") as json_file:
+                data = json.load(json_file)
+            thresholds = data["threshold"]
         else:
-            print("Invalid currency")
-            return
-        with open(json_name, "r") as json_file:
-            data = json.load(json_file)
-        thresholds = data["threshold"]
+            print("File does not exist")
+            sys.exit()
         return thresholds
     
     def GetPrices(self):
         prices = []
-        if(self.name == "BTC"):
-            csv_name = self.direc + "BTC_Realtime.csv"
-        elif(self.name == "ETH"):
-            csv_name = self.direc + "ETH_Realtime.csv"
-        elif(self.name == "LTC"):
-            csv_name = self.direc + "LTC_Realtime.csv"
+        csv_name = self.direc + self.name + "_Realtime.csv"
+        if(CheckIfFileExits(csv_name)):
+            with open(csv_name, "r") as price_data:
+                history_values = csv.DictReader(price_data)
+                holder = []
+                for value in history_values: 
+                    holder.append(value)
+            prices = list(reversed(holder))
+            for i in range(0,10):
+                self.last_three_prices[i] = float(prices[i]["price"])
+            self.current_price = self.last_three_prices[0]
         else:
-            print("Invalid currency")
-            return
-        with open(csv_name, "r") as price_data:
-            history_values = csv.DictReader(price_data)
-            holder = []
-            for value in history_values: 
-                holder.append(value)
-        prices = list(reversed(holder))
-        for i in range(0,10):
-            self.last_three_prices[i] = float(prices[i]["price"])
-        self.current_price = self.last_three_prices[0]
+            print("File does not exist")
+            sys.exit()
         return self.current_price
         
     def GetBalance(self):
@@ -208,15 +196,7 @@ class Currency:
         return networth
 
     def WriteSaleDataToCSV(self, details):
-        if(self.name == "BTC"):
-            csv_name = self.direc + "CSV_Transaction_Data/BTC_Transactions.csv"
-        elif(self.name == "ETH"):
-            csv_name = self.direc + "CSV_Transaction_Data/ETH_Transactions.csv"
-        elif(self.name == "LTC"):
-            csv_name = self.direc + "CSV_Transaction_Data/LTC_Transactions.csv"
-        else:
-            print("Invalid currency")
-            return
+        csv_name = self.direc + "CSV_Transaction_Data/" + self.name + "_Transactions.csv"
         if(CheckIfFileExits(csv_name)):
             with open(csv_name,'a') as old_csv:
                 writer = csv.writer(old_csv)
@@ -229,15 +209,7 @@ class Currency:
         return csv_name
     
     def WriteLastTransactionJson(self, details):
-        if(self.name == "BTC"):
-            json_name = self.direc + "Json_Transaction_Data/BTC_Last_Transaction.json"
-        elif(self.name == "ETH"):
-            json_name = self.direc + "Json_Transaction_Data/ETH_Last_Transaction.json"
-        elif(self.name == "LTC"):
-            json_name = self.direc + "Json_Transaction_Data/LTC_Last_Transaction.json"
-        else:
-            print("Invalid currency")
-            return
+        json_name = self.direc + "Json_Transaction_Data/" + self.name + "_Last_Transaction.json"
         with open(json_name, "w") as new_json:
             json.dump(details, new_json)
         return json_name
