@@ -49,7 +49,7 @@ class Currency:
         self.second_deriv = self.SecondDerivative(self.first_deriv)
     
     def ReadPreviousTransactions(self):
-        csv_name = direc + "CSV_Transaction_Data/" + self.name + "_Transactions.csv"
+        csv_name = self.direc + "CSV_Transaction_Data/" + self.name + "_Transactions.csv"
         if(CheckIfFileExits(csv_name)):
             with open(csv_name, "r") as transaction_data:
                 history_values = csv.DictReader(transaction_data)

@@ -10,8 +10,24 @@ import os.path
 import csv
 import json
 import time
+import argparse
 import API.api_utils as au
 import Algorithm.coin_type as ct
+
+parser = argparse.ArgumentParser(description="Find the ideal thresholds for any currency.")
+parser.add_argument("-d", "--home", type=str, required=True, help="The directory for artifacts")
+parser.add_argument("-i", "--currencies", type=str, nargs="+", required=True, help="The names of currencies")
+parser.add_argument("-p", "--commission", type=float, required=True, help="The commission percentage taken by the broker")
+parser.add_argument("-t", "--test", type=int, required=True, help="Should the program run a demo on the prices, 1 to execute, 0 for just prices")
+
+args = parser.parse_args()
+home = str(args.home)
+currencies = args.currencies
+commission = float(args.commission)
+test = bool(args.test)
+names = []
+for name in currencies:
+    names.append(str(name).upper())
 
 def CheckIfFileExits(filename):
     return os.path.isfile(filename)
@@ -61,8 +77,12 @@ def ExecuteRealTimeDemo(names, data_direc, commission):
         execs.append(details)
     return execs
 
-client = au.API_Client("/home/ronhaber/Documents/API_Utils/", False)
-names = ["BTC", "ETH", "BNB"]
-info = GetCoinInfo(client, names)
-files = WriteHistoryCSV("/home/ronhaber/Documents/Crypto_Docs/Binance/", client, info)
-
+if __name__ == "__main__":
+    API_key_direc = "/media/pi/HaberServer/Crypto_Share/API_Utils/Binance/"
+    client = au.API_Client(API_key_direc, False)
+    info = GetCoinInfo(client, names)
+    files = WriteHistoryCSV(home, client, info)
+    print(test)
+    if(test):
+        executions = ExecuteRealTimeDemo(names, home, commission)
+        print(executions)
