@@ -11,8 +11,6 @@ from binance.client import Client
 from binance.enums import *
 from binance.exceptions import BinanceAPIException, BinanceOrderException
 
-home = "/home/ronhaber/Documents/API_Utils/"
-
 def convert_timestamp_to_date(timestamp):
     time_holder = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
     return time_holder
@@ -33,7 +31,13 @@ class API_Client:
             sys.exit()
         return client
 
-    def GetLatestPrice(self, name):
+    def GetCurrentPrice(self, name):
+        ticker = name + "EUR"
+        values = self.client.get_symbol_ticker(symbol=ticker)
+        price = values["price"]
+        return price
+    
+    def GetDetailedPrices(self, name):
         ticker = name + "EUR" # Always gets the value in Euros
         values = self.client.get_ticker(symbol=ticker)
         info = {
@@ -133,8 +137,3 @@ class API_Client:
             public_key = public.read()
             public_key = public_key[:-1]
         return public_key, secret_key
-
-
-client = API_Client(home, False)
-price = client.GetLatestPrice("BTC")
-# print(client.GetLatestPrice("LINK")) I need to think of a different coin to sub LTC
