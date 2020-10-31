@@ -25,7 +25,7 @@ args = parser.parse_args()
 def CurrencyExecution(currency_type, price_path, json_path, cash, commission, threshold_limits):
     csv_path = price_path + currency_type + "_Transactions.csv"
     price_path = price_path + currency_type + "_Realtime.csv"
-    json_path = json_path + currency_type.lower() + "_thresholds.csv"
+    json_path = json_path + currency_type.lower() + "_thresholds.json"
     Coin = ghp.Crypto(currency_type, price_path, json_path)
     threshold_array, wallet_array = tc.CalculateThresholds(Coin, cash, commission, 
                                     threshold_limits[0], threshold_limits[1], threshold_limits[2], threshold_limits[3])
@@ -48,7 +48,7 @@ def WriteInfoToJson(coin_type, threshold_data, max_amount, json_path):
 def ThresholdLog(currency_type, price_path, json_path, cash, commission, threshold):
     csv_path = price_path + currency_type + "_Transactions.csv"
     price_path = price_path + currency_type + "_Realtime.csv"
-    json_path = json_path + currency_type.lower() + "_thresholds.csv"
+    json_path = json_path + currency_type.lower() + "_thresholds.json"
     Coin = ghp.Crypto(currency_type, price_path, json_path)
     # Calculate with the new threshold
     dataset = Coin.GetCoinPriceList()
