@@ -22,7 +22,7 @@ def CalculateThresholds(currency_obj, cash, commission, fb_max, sb_max, fs_max, 
     elif(name == "BNB"):
         multiplier = 80
     else:
-        multiplier = 90 # value could potentially change
+        multiplier = 800 # value could potentially change
     dataset = currency_obj.GetCoinPriceList()
     first_deriv = da.FirstDerivative2Data(dataset)
     second_deriv = da.SecondDerivative2Data(first_deriv)

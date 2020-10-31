@@ -30,6 +30,7 @@ def CurrencyExecution(currency_type, price_path, json_path, cash, commission, th
     threshold_array, wallet_array = tc.CalculateThresholds(Coin, cash, commission, 
                                     threshold_limits[0], threshold_limits[1], threshold_limits[2], threshold_limits[3])
     max_threshold, max_amount = tc.GetMaxThreshold(threshold_array, wallet_array)
+    print(max_amount)
     WriteInfoToJson(Coin, max_threshold, max_amount, json_path)
     return max_threshold, max_amount, json_path
 
