@@ -82,7 +82,6 @@ if __name__ == "__main__":
     client = au.API_Client(API_key_direc, False)
     info = GetCoinInfo(client, names)
     files = WriteHistoryCSV(home, client, info)
-    print(test)
     if(test):
         executions = ExecuteRealTimeDemo(names, home, commission)
         print(executions)
