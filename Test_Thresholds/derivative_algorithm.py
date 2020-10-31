@@ -92,21 +92,21 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
         if(wallet > 0):
             if(first_val > first_sell_thresh and second_val < second_sell_thresh):
                 # This part will change to send a sell command to the api 
-                #if(CheckProfitability(last_buy_price, price, commission) or (last_buy_price < (price * 0.995))):
-                # removed the profitability since I want just the buy indices
-                cash, paid = SellPercentageCurrency(wallet, price, commission)
-                # This part will change to send a sell command to the api
-                wallet = 0
-                detailed = {
-                    "time":ghp.convert_timestamp_to_date(time),
-                    "transaction": "sold",
-                    "price":price,
-                    "cash":cash,
-                    "coin":wallet,
-                    "networth": cash,
-                    "commission":paid
-                }
-                transaction_data.append(detailed)
+                if(CheckProfitability(last_buy_price, price, commission) or (last_buy_price < (price * 0.995))):
+                    # removed the profitability since I want just the buy indices
+                    cash, paid = SellPercentageCurrency(wallet, price, commission)
+                    # This part will change to send a sell command to the api
+                    wallet = 0
+                    detailed = {
+                        "time":ghp.convert_timestamp_to_date(time),
+                        "transaction": "sold",
+                        "price":price,
+                        "cash":cash,
+                        "coin":wallet,
+                        "networth": cash,
+                        "commission":paid
+                    }
+                    transaction_data.append(detailed)
     try:
         final = transaction_data[-1]["networth"]
     except IndexError:
