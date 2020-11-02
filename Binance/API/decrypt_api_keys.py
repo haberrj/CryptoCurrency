@@ -5,7 +5,7 @@
 # Used to decrypt the api keys so they arent saved in plain text
 
 import os, sys
-import key_operations as ko
+import API.key_operations as ko
 
 def ReadEncryptedAPIKey(api_key):
     with open(api_key, "rn") as api:
