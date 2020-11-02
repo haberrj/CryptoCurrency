@@ -99,5 +99,3 @@ else:
 	sys.exit(1)
 
 # Remove the API plain text keys
-os.remove(API_Public_Key)
-os.remove(API_Private_Key)
