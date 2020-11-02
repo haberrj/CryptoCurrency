@@ -8,7 +8,7 @@ import os, sys
 import API.key_operations as ko
 
 def ReadEncryptedAPIKey(api_key):
-    with open(api_key, "rn") as api:
+    with open(api_key, "rb") as api:
         api_value = api.read().strip()
     return api_value
 
