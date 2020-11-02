@@ -34,5 +34,5 @@ def WriteEncodedFile(new_file_name, old_file_name, key_file):
 
 def WriteDecodedFile(api_key, new_file_name, key_file):
     with open(new_file_name, "w") as new_file:
-        new_file.write(api)
+        new_file.write(api_key)
     return new_file_name
