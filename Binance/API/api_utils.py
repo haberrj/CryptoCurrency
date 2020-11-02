@@ -6,6 +6,7 @@
 
 import os, sys
 import time
+import Cyber_Security.decrypt_api_keys as dak
 from datetime import datetime
 from binance.client import Client
 from binance.enums import *
@@ -128,12 +129,16 @@ class API_Client:
         return True
     
     def GetAPIKeys(self):
-        public_file = self.home + 'API_Binance_public_key'
-        secret_file = self.home + 'API_Binance_secret_key'
+        public_file_encrypted = self.home + 'API_Binance_public_key_encrypted'
+        secret_file_encrypted = self.home + 'API_Binance_secret_key_encrypted'
+        public_file = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", "/home/pi/Bookshelf/API_Binance_public_key", public_file_encrypted)
+        secret_file = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", "/home/pi/Bookshelf/API_Binance_secret_key", secret_file_encrypted)
         with open(secret_file, 'r') as secret:
             secret_key = secret.read()
             secret_key = secret_key[:-1]
         with open(public_file, 'r') as public:
             public_key = public.read()
             public_key = public_key[:-1]
+        os.remove(public_file)
+        os.remove(secret_file)
         return public_key, secret_key

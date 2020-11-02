@@ -16,6 +16,7 @@ import base64
 import hashlib
 import hmac
 import save_values as sv
+import Cyber_Security.decrypt_api_keys as dak
 
 if int(platform.python_version_tuple()[0]) > 2:
 	import urllib.request as urllib2
@@ -30,8 +31,11 @@ api_funding = {"DepositMethods", "DepositAddresses", "DepositStatus", "WithdrawI
 api_domain = "https://api.kraken.com"
 api_data = ""
 
-API_Public_Key = "/media/pi/HaberServer/Crypto_Share/API_Utils/API_Public_Key"
-API_Private_Key = "/media/pi/HaberServer/Crypto_Share/API_Utils/API_Private_Key"
+# Decrypt the API keys so they're not saved in plain text
+API_Public_Key_encrypted = "/media/pi/HaberServer/Crypto_Share/API_Utils/API_Public_Key_Kraken_encrypted"
+API_Public_Key = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", "/home/pi/Bookshelf/API_Public_Key_Kraken", API_Public_Key_encrypted)
+API_Private_Key_encrypted = "/media/pi/HaberServer/Crypto_Share/API_Utils/API_Private_Key_Kraken_encrypted"
+API_Private_Key = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", "home/pi/Bookshelf/API_Private_Key_Kraken",API_Public_Key_encrypted)
 
 if len(sys.argv) < 2:
 	api_method = "Time"
@@ -93,3 +97,7 @@ if '"error":[]' in api_reply:
 else:
 	print(api_reply)
 	sys.exit(1)
+
+# Remove the API plain text keys
+os.remove(API_Public_Key)
+os.remove(API_Private_Key)
