@@ -33,9 +33,9 @@ api_data = ""
 
 # Decrypt the API keys so they're not saved in plain text
 API_Public_Key_encrypted = "/media/pi/HaberServer/Crypto_Share/API_Utils/Kraken/API_Public_Key_Kraken_encrypted"
-API_Public_Key = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", "/home/pi/Bookshelf/API_Public_Key_Kraken", API_Public_Key_encrypted)
+API_Public_Key = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", API_Public_Key_encrypted,"/home/pi/Bookshelf/API_Public_Key_Kraken")
 API_Private_Key_encrypted = "/media/pi/HaberServer/Crypto_Share/API_Utils/Kraken/API_Private_Key_Kraken_encrypted"
-API_Private_Key = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", "home/pi/Bookshelf/API_Private_Key_Kraken",API_Public_Key_encrypted)
+API_Private_Key = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", API_Public_Key_encrypted, "home/pi/Bookshelf/API_Private_Key_Kraken")
 
 if len(sys.argv) < 2:
 	api_method = "Time"
