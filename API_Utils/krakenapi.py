@@ -16,7 +16,7 @@ import base64
 import hashlib
 import hmac
 import save_values as sv
-import Cyber_Security.decrypt_api_keys as dak
+import decrypt_api_keys as dak
 
 if int(platform.python_version_tuple()[0]) > 2:
 	import urllib.request as urllib2

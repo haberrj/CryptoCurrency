@@ -6,7 +6,7 @@
 
 import os, sys
 import time
-import Cyber_Security.decrypt_api_keys as dak
+import decrypt_api_keys as dak
 from datetime import datetime
 from binance.client import Client
 from binance.enums import *
