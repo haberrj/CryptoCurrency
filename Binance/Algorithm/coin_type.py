@@ -37,7 +37,7 @@ class Currency:
         self.name = name
         self.direc = data_direc
         self.current_price = 0.0 
-        self.last_three_prices = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] # ltp[0] is current price required to determine 2 first_deriv values
+        self.last_three_prices = [] # ltp[0] is current price required to determine 2 first_deriv values
         self.cash = self.GetLastCashAmount()
         self.coin = self.GetLastCoinAmount()
         self.commission = commission
@@ -45,9 +45,19 @@ class Currency:
 
         self.thresholds = self.GetThresholds()
         self.GetPrices()
+        self.sample = self.SetSampleSize()
         self.first_deriv = self.FirstDerivative() # required to determine the second derivative (first_deriv[0] is the important one here)
         self.second_deriv = self.SecondDerivative(self.first_deriv)
     
+    def SetSampleSize(self):
+        if(self.name == "BTC"):
+            sample = 67
+        elif(self.name == "ETH"):
+            sample = 67
+        else: # BNB and LINK for now since short term
+            sample = 2
+        return sample
+
     def ReadPreviousTransactions(self):
         csv_name = self.direc + "CSV_Transaction_Data/" + self.name + "_Transactions.csv"
         if(CheckIfFileExits(csv_name)):
@@ -110,8 +120,8 @@ class Currency:
                 for value in history_values: 
                     holder.append(value)
             prices = list(reversed(holder))
-            for i in range(0,10):
-                self.last_three_prices[i] = float(prices[i]["price"])
+            for i in range(0,100):
+                self.last_three_prices.append(float(prices[i]["price"]))
             self.current_price = self.last_three_prices[0]
         else:
             print("File does not exist")
@@ -124,7 +134,7 @@ class Currency:
         return balance
 
     def FirstDerivative(self):
-        sample = 2
+        sample = self.sample
         deriv_array = []
         price_holder = self.last_three_prices
         try:
@@ -139,7 +149,7 @@ class Currency:
         return deriv_array
 
     def SecondDerivative(self, first_deriv):
-        sample = 2
+        sample = self.sample
         try:
             second_deriv = (first_deriv[0] - first_deriv[sample])/float(sample)
         except IndexError:
