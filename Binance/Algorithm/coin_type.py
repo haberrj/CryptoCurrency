@@ -120,7 +120,7 @@ class Currency:
                 for value in history_values: 
                     holder.append(value)
             prices = list(reversed(holder))
-            for i in range(0,100):
+            for i in range(0,300):
                 self.last_three_prices.append(float(prices[i]["price"]))
             self.current_price = self.last_three_prices[0]
         else:
