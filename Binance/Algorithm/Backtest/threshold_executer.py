@@ -45,15 +45,15 @@ def WriteInfoToJson(coin_type, threshold_data, max_amount, json_path):
         json.dump(data_dict, json_file) # This way only 1 entry every time... will be easier to track
     print("JSON updated at ", json_path)
 
-def ThresholdLog(currency_type, price_path, json_path, cash, commission, threshold):
+def ThresholdLog(currency_type, price_path, json_path, cash, commission, threshold, sample):
     csv_path = price_path + currency_type + "_Transactions.csv"
     price_path = price_path + currency_type + "_Realtime.csv"
     json_path = json_path + currency_type.lower() + "_thresholds.json"
     Coin = ghp.Crypto(currency_type, price_path, json_path)
     # Calculate with the new threshold
     dataset = Coin.GetCoinPriceList()
-    first_deriv = da.FirstDerivative2Data(dataset)
-    second_deriv = da.SecondDerivative2Data(first_deriv)
+    first_deriv = da.FirstDerivative2Data(dataset, sample)
+    second_deriv = da.SecondDerivative2Data(first_deriv, sample)
     transactions, final = da.TradingCurrency(dataset, first_deriv, second_deriv, cash, commission, threshold)
     WriteInfoToCSV(csv_path, transactions)
 
@@ -77,4 +77,12 @@ if __name__ == "__main__":
     threshold, amount, json_file = CurrencyExecution(currency_type, price_path, json_path, cash, commission, threshold_limits)
     print("The ideal thresholds are: ", threshold)
     print("That will produce a max amount of: ", "{:,.2f}".format(amount), "€")
-    ThresholdLog(currency_type, price_path, json_path, cash, commission, threshold)
+    if(currency_type == "BTC"):
+        sample = 67
+    elif(currency_type == "ETH"):
+        sample = 67
+    elif(currency_type == "BNB"):
+        sample = 2
+    else: # Link
+        sample = 2
+    ThresholdLog(currency_type, price_path, json_path, cash, commission, threshold, sample)

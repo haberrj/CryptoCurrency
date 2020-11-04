@@ -16,16 +16,20 @@ def CalculateThresholds(currency_obj, cash, commission, fb_max, sb_max, fs_max, 
     # need to include currency differentiation
     name = currency_obj.name
     if(name == "BTC"):
-        multiplier = 1
+        multiplier = 18
+        sample = 67
     elif(name == "ETH"):
-        multiplier = 8
+        multiplier = 80
+        sample = 67
     elif(name == "BNB"):
         multiplier = 80
+        sample = 2
     else:
         multiplier = 800 # value could potentially change
+        sample = 2
     dataset = currency_obj.GetCoinPriceList()
-    first_deriv = da.FirstDerivative2Data(dataset)
-    second_deriv = da.SecondDerivative2Data(first_deriv)
+    first_deriv = da.FirstDerivative2Data(dataset, sample)
+    second_deriv = da.SecondDerivative2Data(first_deriv, sample)
     wallet = []
     thr = [] # an array to hold all the threshold data
     thresh_holder = [0,0,0,0]
