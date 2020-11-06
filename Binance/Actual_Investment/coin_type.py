@@ -33,15 +33,20 @@ def CheckIfFileExits(filename):
 
 class Currency:
     # will add more data as things come up
-    def __init__(self, name, data_direc, commission):
+    def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance):
         self.name = name
         self.direc = data_direc
         self.current_price = 0.0 
         self.last_three_prices = [] # ltp[0] is current price required to determine 2 first_deriv values
-        self.cash = self.GetLastCashAmount()
-        self.coin = self.GetLastCoinAmount()
+        self.coin = balance
         self.commission = commission
-        self.current_holding_price = self.GetCurrentHoldingPrice() # initializing this value to make sure it is correctly set
+        self.current_holding_price = current_price
+        
+        # Set cash amount
+        if(self.coin == 0):
+            self.cash = cash_allowance
+        else:
+            self.cash = 0
 
         self.thresholds = self.GetThresholds()
         self.GetPrices()
@@ -72,32 +77,6 @@ class Currency:
             sys.exit()
         return transactions
 
-    def GetCurrentHoldingPrice(self):
-        transactions = self.ReadPreviousTransactions()
-        try:
-            price = float(transactions[0]["price"])
-        except ValueError:
-            price = 0
-        return price
-    
-    def GetLastCashAmount(self):
-        cash = 0.0
-        transactions = self.ReadPreviousTransactions()
-        try:
-            cash = float(transactions[0]["cash"])
-        except ValueError:
-            cash = 0.0
-        return cash
-
-    def GetLastCoinAmount(self):
-        coin = 0.0
-        transactions = self.ReadPreviousTransactions()
-        try:
-            coin = float(transactions[0]["coin"])
-        except ValueError:
-            coin = 0.0
-        return coin
-
     def GetThresholds(self):
         thresholds = []
         json_name = self.direc + "Json_Output_Data/" + self.name.lower() + "_thresholds.json"
@@ -122,7 +101,6 @@ class Currency:
             prices = list(reversed(holder))
             for i in range(0,300):
                 self.last_three_prices.append(float(prices[i]["price"]))
-            self.current_price = self.last_three_prices[0]
         else:
             print("File does not exist")
             sys.exit()
@@ -158,10 +136,12 @@ class Currency:
         return second_deriv
 
     def DetermineTradeType(self):
-        price = self.GetPrices()
+        # Will return trade action as 0 (leave), 1 (buy), 2 (sell)
         first_val = self.FirstDerivative()
         second_val = self.SecondDerivative(first_val)
         self.thresholds = self.GetThresholds()
+        action = 0
+        quantity = self.coin
         if(self.cash > 0):
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
                 self.coin, paid = BuyPercentageCurrency(self.cash, self.current_price, self.commission)
@@ -180,6 +160,8 @@ class Currency:
                 self.WriteSaleDataToCSV(detailed)
                 self.WriteLastTransactionJson(detailed)
                 self.current_holding_price = self.current_price
+                action = 1
+                quantity = self.coin
         if(self.coin > 0):
             self.current_holding_price = self.GetCurrentHoldingPrice() # need to set this value otherwise it will be equal to zero and the whole thing will fail
             if((self.current_price < (self.current_holding_price*0.90)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
@@ -201,17 +183,19 @@ class Currency:
                     }
                     self.WriteSaleDataToCSV(detailed)
                     self.WriteLastTransactionJson(detailed)
+                    action = 2
         # Write the info to a csv somewhere
         networth = self.GetBalance()
-        return networth
+        return action, quantity, networth
 
     def WriteSaleDataToCSV(self, details):
-        csv_name = self.direc + "CSV_Transaction_Data/" + self.name + "_Transactions.csv"
+        csv_name = self.direc + "Actual/CSV_Transaction_Data/" + self.name + "_Transactions.csv"
         if(CheckIfFileExits(csv_name)):
             with open(csv_name,'a') as old_csv:
                 writer = csv.writer(old_csv)
                 writer.writerow([details["time"], details["transaction"], details["price"], details["cash"], details["coin"], details["networth"]])
         else:
+            keys = list(details.keys())
             with open(csv_name, 'w') as new_csv:
                 writer = csv.DictWriter(new_csv, keys)
                 writer.writeheader()
@@ -219,7 +203,7 @@ class Currency:
         return csv_name
     
     def WriteLastTransactionJson(self, details):
-        json_name = self.direc + "Json_Transaction_Data/" + self.name + "_Last_Transaction.json"
+        json_name = self.direc + "Actual/Json_Transaction_Data/" + self.name + "_Last_Transaction.json"
         with open(json_name, "w") as new_json:
             json.dump(details, new_json)
         return json_name

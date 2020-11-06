@@ -32,6 +32,11 @@ class API_Client:
             sys.exit()
         return client
 
+    def GetCommission(self, name):
+        ticker = name + "EUR"
+        fee = self.client.get_trade_fee(symbol=ticker)["tradeFee"][0]["taker"] # maker seems to return 0
+        return fee
+    
     def GetCurrentPrice(self, name):
         ticker = name + "EUR"
         values = self.client.get_symbol_ticker(symbol=ticker)
@@ -111,6 +116,9 @@ class API_Client:
     def GetAssetBalance(self, name):
         return self.client.get_asset_balance(asset=name)
 
+    def GetAssetDetails(self):
+        return self.client.get_asset_details()
+
     def TopUpBNB(self):
         # Keeps me having a BNB balance to have the commission as low as possible
         min_balance = 1 # minimum 1 BNB at all times
@@ -129,10 +137,10 @@ class API_Client:
         return True
     
     def GetAPIKeys(self):
-        public_file_encrypted = self.home + 'API_Binance_public_key_encrypted'
-        secret_file_encrypted = self.home + 'API_Binance_secret_key_encrypted'
-        public_file = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", public_file_encrypted, "/home/pi/Bookshelf/API_Binance_public_key")
-        secret_file = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", secret_file_encrypted, "/home/pi/Bookshelf/API_Binance_secret_key")
+        public_file_encrypted = '/home/ronhaber/Documents/API_Utils/Binance_Encrypted/API_Binance_public_key_encrypted'#self.home + 'API_Binance_public_key_encrypted'
+        secret_file_encrypted = '/home/ronhaber/Documents/API_Utils/Binance_Encrypted/API_Binance_secret_key_encrypted'#self.home + 'API_Binance_secret_key_encrypted'
+        public_file = dak.GetAPIKeyFile("/home/ronhaber/Documents/API_Utils/api.key", public_file_encrypted, "/home/ronhaber/Documents/API_Utils/Binance_Encrypted/API_Binance_public_key") #dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", public_file_encrypted, "/home/pi/Bookshelf/API_Binance_public_key")
+        secret_file = dak.GetAPIKeyFile("/home/ronhaber/Documents/API_Utils/api.key", secret_file_encrypted, "/home/ronhaber/Documents/API_Utils/Binance_Encrypted/API_Binance_secret_key") #dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", secret_file_encrypted, "/home/pi/Bookshelf/API_Binance_secret_key")
         with open(secret_file, 'r') as secret:
             secret_key = secret.read()
             secret_key = secret_key[:-1]
