@@ -58,7 +58,7 @@ class API_Client:
         # Will execute the fastest possible transaction
         ticker = name + "EUR"
         try:
-            buy_order_market = self.client.create_test_order(
+            buy_order_market = self.client.create_order(
                 symbol=ticker,
                 side='BUY',
                 type='MARKET',
@@ -67,13 +67,14 @@ class API_Client:
         except BinanceAPIException as e:
             print(e)
             print("False Call")
-            sys.exit()
+            return False
         except BinanceOrderException as e:
             print(e)
             print("False Call")
-            sys.exit()
+            return False
         order_info = {
             "time": convert_timestamp_to_date(int(time.time())),
+            "name": name,
             "id": buy_order_market["orderId"],
             "price": buy_order_market["price"],
             "status": buy_order_market["status"],
@@ -95,11 +96,39 @@ class API_Client:
         except BinanceAPIException as e:
             print(e)
             print("False Call")
-            sys.exit()
+            return False
         except BinanceOrderException as e:
             print(e)
             print("False Call")
-            sys.exit()
+            return False
+        order_info = {
+            "time": convert_timestamp_to_date(int(time.time())),
+            "name": name, 
+            "id": sell_order_market["orderId"],
+            "price": sell_order_market["price"],
+            "status": sell_order_market["status"],
+            "coin": sell_order_market["executedQty"],
+            "type": sell_order_market["side"]
+        }
+        return order_info
+    
+    def TestOrder(self, action, symbol, quantity):
+        ticker = symbol + "EUR"
+        try:
+            sell_order_market = self.client.create_order(
+                symbol=ticker,
+                side=action.upper(),
+                type='MARKET',
+                quantity=quantity
+            )
+        except BinanceAPIException as e:
+            print(e)
+            print("False Call")
+            return False
+        except BinanceOrderException as e:
+            print(e)
+            print("False Call")
+            return False
         order_info = {
             "time": convert_timestamp_to_date(int(time.time())),
             "id": sell_order_market["orderId"],
