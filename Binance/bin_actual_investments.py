@@ -104,11 +104,11 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
                 print("Insufficient Funds")
         elif(action == 2):
             # Sell
-            new_price = float(client.GetCurrentPrice(name))
+            # new_price = float(client.GetCurrentPrice(name))
             if(name == "BTC" or name == "ETH"):
-                quantity = "{:0.0{}f}".format(float(cash/new_price), 5)
+                quantity = "{:0.0{}f}".format(quantity, 5)
             else:
-                quantity = "{:0.0{}f}".format(float(cash/new_price), 3)
+                quantity = "{:0.0{}f}".format(quantity, 3)
             order_info = client.SellItem(name, quantity)
             if(order_info == False):
                 print("Error with order")
