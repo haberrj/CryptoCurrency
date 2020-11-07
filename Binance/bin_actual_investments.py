@@ -18,7 +18,6 @@ parser.add_argument("-i", "--currencies", type=str, nargs="+", required=True, he
 args = parser.parse_args()
 home = str(args.home)
 currencies = args.currencies
-commission = float(args.commission)
 names = []
 for name in currencies:
     names.append(str(name).upper())
@@ -33,6 +32,8 @@ def GetCoinInfo(client, names, direc):
         try:
             balance = float(client.GetAssetBalance(name))
         except ValueError:
+            balance = 0.0
+        except TypeError:
             balance = 0.0
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
@@ -59,7 +60,7 @@ def WriteHistoryCSV(direc, client, coins):
                 writer = csv.writer(old_csv)
                 writer.writerow([time, name, price])
         else:
-            keys = coin.keys()
+            keys = list(coin.keys())
             with open(filename, 'w') as new_csv:
                 writer = csv.DictWriter(new_csv, keys)
                 writer.writeheader()
@@ -76,26 +77,41 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         cash = value["last_cash"]
         price = value["price"]
         commission = value["commission"]
+        print(name)
+        print("price: ", price)
         coin = ct.Currency(name, data_direc, commission, price, cash, balance) 
         action, quantity, networth = coin.DetermineTradeType() # This will need to return an action as well
+        # action = 1
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
             "name": name,
             "action": action,
             "networth": networth
         }
+        order_info = False
         if(action == 1):
             # Buy
-            if((price/actual_cash) == quantity):
-                # need to implement a checker for this since the price will change between calls
-                order_info = client.BuyItem(name, quantity)
-                actual_cash -= (quantity * price) # checker for actual cash not sure if this will work but will have to see
+            new_price = float(client.GetCurrentPrice(name))
+            print("new_price", new_price)
+            if(name == "BTC" or name == "ETH"):
+                quantity = "{:0.0{}f}".format(float(cash/new_price), 5)
             else:
+                quantity = "{:0.0{}f}".format(float(cash/new_price), 3)
+            print("quantity: ", quantity)
+            order_info = client.BuyItem(name, quantity)
+            print(order_info)
+            if(order_info == False):
                 print("Insufficient Funds")
         elif(action == 2):
             # Sell
+            new_price = float(client.GetCurrentPrice(name))
+            if(name == "BTC" or name == "ETH"):
+                quantity = "{:0.0{}f}".format(float(cash/new_price), 5)
+            else:
+                quantity = "{:0.0{}f}".format(float(cash/new_price), 3)
             order_info = client.SellItem(name, quantity)
-            actual_cash += quantity * price
+            if(order_info == False):
+                print("Error with order")
         order_info_array.append(order_info)
         execs.append(details)
     return order_info_array, execs 
@@ -113,12 +129,40 @@ def GetCashValue(direc, name):
         return
     return amount
 
+def CheckOrderStatuses(direc, orders):
+    data_direc = direc + "/Actual/CSV_Transactions/"
+    files = []
+    for order in orders:
+        if(order == False):
+            continue
+        print(order["name"])
+        print(order["status"])
+        files.append(WriteTransactionInfo(direc, order["name"], order))
+    return files
+        
+def WriteTransactionInfo(direc, name, order):
+    filename = data_direc + order["name"] + "_transactions.csv"
+    keys = list(order.keys())
+    if(CheckIfFileExits(filename)):
+        with open(filename,'a') as old_csv:
+            writer = csv.writer(old_csv)
+            writer.writerow([time, name, price])
+    else:
+        with open(filename, 'w') as new_csv:
+            writer = csv.DictWriter(new_csv, keys)
+            writer.writeheader()
+            writer.writerow(order)
+    return filename
+    
 if __name__ == "__main__":
     API_key_direc = "/media/pi/HaberServer/Crypto_Share/API_Utils/Binance/"
     actual_home = home + "Actual/"
     client = au.API_Client(API_key_direc, False)
     info, actual_cash = GetCoinInfo(client, names, actual_home) # Gets the price of the asset
     orders, executions = ExecuteRealTime(client, home, info, actual_cash)
+    order_files = CheckOrderStatuses(home, orders)
+    print(order_files)
     # Any writing to documents should be done at the end
     files = WriteHistoryCSV(home, client, info)
+    print(files)
     # Write a history file for the orders

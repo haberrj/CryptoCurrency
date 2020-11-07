@@ -36,12 +36,11 @@ class Currency:
     def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance):
         self.name = name
         self.direc = data_direc
-        self.current_price = 0.0 
+        self.current_price = current_price
         self.last_three_prices = [] # ltp[0] is current price required to determine 2 first_deriv values
         self.coin = balance
         self.commission = commission
-        self.current_holding_price = current_price
-        
+
         # Set cash amount
         if(self.coin == 0):
             self.cash = cash_allowance
@@ -50,6 +49,7 @@ class Currency:
 
         self.thresholds = self.GetThresholds()
         self.GetPrices()
+        self.current_holding_price = self.GetCurrentHoldingPrice() # needs to get the last price that it was bought for
         self.sample = self.SetSampleSize()
         self.first_deriv = self.FirstDerivative() # required to determine the second derivative (first_deriv[0] is the important one here)
         self.second_deriv = self.SecondDerivative(self.first_deriv)
@@ -63,8 +63,16 @@ class Currency:
             sample = 2
         return sample
 
+    def GetCurrentHoldingPrice(self):
+        transactions = self.ReadPreviousTransactions()
+        try:
+            price = float(transactions[0]["price"])
+        except ValueError:
+            price = 0
+        return price
+
     def ReadPreviousTransactions(self):
-        csv_name = self.direc + "CSV_Transaction_Data/" + self.name + "_Transactions.csv"
+        csv_name = self.direc + "Actual/CSV_Transaction_Data/" + self.name + "_Transactions.csv"
         if(CheckIfFileExits(csv_name)):
             with open(csv_name, "r") as transaction_data:
                 history_values = csv.DictReader(transaction_data)
@@ -147,7 +155,6 @@ class Currency:
                 self.coin, paid = BuyPercentageCurrency(self.cash, self.current_price, self.commission)
                 self.cash = 0
                 networth = self.GetBalance()
-                print(networth)
                 detailed = {
                     "time":convert_timestamp_to_date(int(time.time())),
                     "transaction": "bought",
