@@ -28,6 +28,7 @@ def CheckIfFileExits(filename):
 def GetCoinInfo(client, names, direc):
     # names is an array of strings
     coins = []
+    direc = direc + "Balances/"
     for name in names:
         try:
             balance = float(client.GetAssetBalance(name))
@@ -81,7 +82,8 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         print("price: ", price)
         coin = ct.Currency(name, data_direc, commission, price, cash, balance) 
         action, quantity, networth = coin.DetermineTradeType() # This will need to return an action as well
-        # action = 1
+        print("Actions ", action, " ", quantity, " ", networth)
+        # action = 2
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
             "name": name,
@@ -109,6 +111,7 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
                 quantity = "{:0.0{}f}".format(quantity, 5)
             else:
                 quantity = "{:0.0{}f}".format(quantity, 3)
+            print(quantity)
             order_info = client.SellItem(name, quantity)
             if(order_info == False):
                 print("Error with order")
@@ -131,15 +134,45 @@ def GetCashValue(direc, name):
 
 def CheckOrderStatuses(direc, orders):
     data_direc = direc + "/Actual/CSV_Transactions/"
-    files = []
+    transaction_files = []
+    cash_files = []
     for order in orders:
         if(order == False):
             continue
         print(order["name"])
         print(order["status"])
-        files.append(WriteTransactionInfo(direc, order["name"], order))
-    return files
-        
+        if(order["side"] == "SELL"):
+            name = order["name"]
+            price = order["price"]
+            quantity = order["coin"]
+            data_direc = direc + "Actual/Balances/"
+            cash = float(price) * float(quantity)
+            cash = "{:0.0{}f}".format(quantity, 2)
+            print(cash)
+            cash_files.append(WriteNewCashAmount(data_direc, name, cash))
+        transaction_files.append(WriteTransactionInfo(direc, order["name"], order))
+    return transaction_files, cash_files
+
+def WriteNewCashAmount(data_direc, name, cash):
+    filename = data_direc + name + "_Balance.csv"
+    time = au.convert_timestamp_to_date(int(time.time()))
+    if(CheckIfFileExits(filename)):
+        with open(filename,'a') as old_csv:
+            writer = csv.writer(old_csv)
+            writer.writerow([time, name, price])
+    else:
+        details = {
+            "time": time,
+            "name": name,
+            "cash": cash
+        }
+        keys = list(details.keys())
+        with open(filename, 'w') as new_csv:
+            writer = csv.DictWriter(new_csv, keys)
+            writer.writeheader()
+            writer.writerow(details)
+    return filename
+
 def WriteTransactionInfo(direc, name, order):
     filename = data_direc + order["name"] + "_transactions.csv"
     keys = list(order.keys())
@@ -160,8 +193,9 @@ if __name__ == "__main__":
     client = au.API_Client(API_key_direc, False)
     info, actual_cash = GetCoinInfo(client, names, actual_home) # Gets the price of the asset
     orders, executions = ExecuteRealTime(client, home, info, actual_cash)
-    order_files = CheckOrderStatuses(home, orders)
-    print(order_files)
+    transaction_files, cash_files = CheckOrderStatuses(home, orders)
+    print(transaction_files)
+    print(cash_files)
     # Any writing to documents should be done at the end
     files = WriteHistoryCSV(home, client, info)
     print(files)
