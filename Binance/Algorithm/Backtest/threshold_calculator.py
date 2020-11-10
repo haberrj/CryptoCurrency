@@ -16,11 +16,11 @@ def CalculateThresholds(currency_obj, cash, commission, fb_max, sb_max, fs_max, 
     # need to include currency differentiation
     name = currency_obj.name
     if(name == "BTC"):
-        multiplier = 18
-        sample = 67
+        multiplier = 1
+        sample = 2
     elif(name == "ETH"):
-        multiplier = 80
-        sample = 67
+        multiplier = 8
+        sample = 2
     elif(name == "BNB"):
         multiplier = 80
         sample = 2

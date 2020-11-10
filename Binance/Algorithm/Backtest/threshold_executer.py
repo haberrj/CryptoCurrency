@@ -58,7 +58,10 @@ def ThresholdLog(currency_type, price_path, json_path, cash, commission, thresho
     WriteInfoToCSV(csv_path, transactions)
 
 def WriteInfoToCSV(csv_name, details):
-    keys = list(details[0].keys())
+    try:
+        keys = list(details[0].keys())
+    except IndexError:
+        return csv_name
     with open(csv_name, 'w') as new_csv:
         writer = csv.DictWriter(new_csv, keys)
         writer.writeheader()
