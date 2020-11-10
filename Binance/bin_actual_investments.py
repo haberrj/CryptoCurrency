@@ -45,7 +45,8 @@ def GetCoinInfo(client, names, direc):
             "commission": float(client.GetCommission(name))
         }
         coins.append(details)
-    actual_cash = client.GetAccountDetails()["balances"] # This will need to be changed somehow for the current cash amount
+    actual_cash = client.GetAssetBalance("EUR")["free"] # This will need to be changed somehow for the current cash amount
+    print(actual_cash)
     return coins, actual_cash
 
 def WriteHistoryCSV(direc, client, coins):
@@ -82,7 +83,7 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         print("price: ", price)
         coin = ct.Currency(name, data_direc, commission, price, cash, balance) 
         action, quantity, networth = coin.DetermineTradeType() # This will need to return an action as well
-        print("Actions ", action, " ", quantity, " ", networth)
+        print("Actions ", action, " ", quantity, " ", networth, " ", cash)
         # action = 2
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
@@ -101,6 +102,7 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
                 quantity = "{:0.0{}f}".format(float(cash/new_price), 3)
             print("quantity: ", quantity)
             order_info = client.BuyItem(name, quantity)
+            # order_info = client.TestOrder("buy", name, quantity)
             print(order_info)
             if(order_info == False):
                 print("Insufficient Funds")
@@ -113,6 +115,7 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
                 quantity = "{:0.0{}f}".format(quantity, 3)
             print(quantity)
             order_info = client.SellItem(name, quantity)
+            # order_info = client.TestOrder("sell", name, quantity)
             if(order_info == False):
                 print("Error with order")
         order_info_array.append(order_info)
