@@ -115,7 +115,7 @@ class API_Client:
     def TestOrder(self, action, symbol, quantity):
         ticker = symbol + "EUR"
         try:
-            sell_order_market = self.client.create_order(
+            sell_order_market = self.client.create_test_order(
                 symbol=ticker,
                 side=action.upper(),
                 type='MARKET',
@@ -129,15 +129,15 @@ class API_Client:
             print(e)
             print("False Call")
             return False
-        order_info = {
-            "time": convert_timestamp_to_date(int(time.time())),
-            "id": sell_order_market["orderId"],
-            "price": sell_order_market["price"],
-            "status": sell_order_market["status"],
-            "coin": sell_order_market["executedQty"],
-            "type": sell_order_market["side"]
-        }
-        return order_info
+        # order_info = {
+        #     "time": convert_timestamp_to_date(int(time.time())),
+        #     "id": sell_order_market["orderId"],
+        #     "price": sell_order_market["price"],
+        #     "status": sell_order_market["status"],
+        #     "coin": sell_order_market["executedQty"],
+        #     "type": sell_order_market["side"]
+        # }
+        return sell_order_market
 
     def GetAccountDetails(self):
         return self.client.get_account()
