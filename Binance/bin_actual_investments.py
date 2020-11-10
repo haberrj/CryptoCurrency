@@ -31,7 +31,7 @@ def GetCoinInfo(client, names, direc):
     direc = direc + "Balances/"
     for name in names:
         try:
-            balance = float(client.GetAssetBalance(name))
+            balance = float(client.GetAssetBalance(name)["free"])
         except ValueError:
             balance = 0.0
         except TypeError:
