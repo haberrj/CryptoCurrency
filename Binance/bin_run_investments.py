@@ -36,10 +36,13 @@ def GetCoinInfo(client, names):
     # names is an array of strings
     coins = []
     for name in names:
+        detailed_pricing = client.GetDetailedPrices(name)
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
             "name": name,
-            "price":float(client.GetCurrentPrice(name))
+            "price":float(detailed_pricing["price"]),
+            "bid":float(detailed_pricing["bid"]), # price paid when selling
+            "ask":float(detailed_pricing["ask"]) # price paid when buying
         }
         coins.append(details)
     return coins
@@ -50,12 +53,14 @@ def WriteHistoryCSV(direc, client, coins):
         time = coin["time"]
         name = coin["name"]
         price = coin["price"]
+        bid = coin["bid"]
+        ask = coin["ask"]
         filename = direc + name + "_Realtime.csv"
         # If file exists append it
         if(CheckIfFileExits(filename)):
             with open(filename,'a') as old_csv:
                 writer = csv.writer(old_csv)
-                writer.writerow([time, name, price])
+                writer.writerow([time, name, price, bid, ask])
         else:
             keys = coin.keys()
             with open(filename, 'w') as new_csv:
