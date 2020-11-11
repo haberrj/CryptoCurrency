@@ -33,16 +33,17 @@ def CheckIfFileExits(filename):
 
 class Currency:
     # will add more data as things come up
-    def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance):
+    def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance, balance_holder):
         self.name = name
         self.direc = data_direc
         self.current_price = current_price
         self.last_three_prices = [] # ltp[0] is current price required to determine 2 first_deriv values
         self.coin = balance
+        self.balance_holder = balance_holder
         self.commission = commission
 
         # Set cash amount
-        if(self.coin == 0):
+        if(self.balance_holder == 0):
             self.cash = cash_allowance
         else:
             self.cash = 0
@@ -99,6 +100,10 @@ class Currency:
     
     def GetPrices(self):
         prices = []
+        if(self.balance_holder == 1): # meaning I have to sell
+            price_point = "bid"
+        else:
+            price_point = "ask" # if I have to buy
         csv_name = self.direc + self.name + "_Realtime.csv"
         if(CheckIfFileExits(csv_name)):
             with open(csv_name, "r") as price_data:
@@ -108,7 +113,10 @@ class Currency:
                     holder.append(value)
             prices = list(reversed(holder))
             for i in range(0,300):
-                self.last_three_prices.append(float(prices[i]["price"]))
+                if(prices[i][price_point] != ""):
+                    self.last_three_prices.append(float(prices[i][price_point]))
+                else:
+                    self.last_three_prices.append(0.0)
         else:
             print("File does not exist")
             sys.exit()
