@@ -30,6 +30,7 @@ def GetCoinInfo(client, names, direc):
     coins = []
     direc = direc + "Balances/"
     for name in names:
+        detailed_price = client.GetDetailedPrices(name)
         try:
             balance = float(client.GetAssetBalance(name)["free"])
         except ValueError:
@@ -39,7 +40,9 @@ def GetCoinInfo(client, names, direc):
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
             "name": name,
-            "price":float(client.GetCurrentPrice(name)),
+            "price":float(detailed_price["price"]),
+            "bid":float(detailed_price["bid"]),
+            "ask":float(detailed_price["ask"]),
             "balance": balance,
             "last_cash": GetCashValue(direc, name),
             "commission": float(client.GetCommission(name))
@@ -55,12 +58,14 @@ def WriteHistoryCSV(direc, client, coins):
         time = coin["time"]
         name = coin["name"]
         price = coin["price"]
+        bid = coin["bid"]
+        ask = coin["ask"]
         filename = direc + name + "_Realtime.csv"
         # If file exists append it
         if(CheckIfFileExits(filename)):
             with open(filename,'a') as old_csv:
                 writer = csv.writer(old_csv)
-                writer.writerow([time, name, price])
+                writer.writerow([time, name, price, bid, ask])
         else:
             keys = list(coin.keys())
             with open(filename, 'w') as new_csv:
@@ -78,13 +83,28 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         balance = value["balance"]
         cash = value["last_cash"]
         price = value["price"]
+        bid = value["bid"]
+        ask = value["ask"]
         commission = value["commission"]
         print(name)
-        print("price: ", price)
-        coin = ct.Currency(name, data_direc, commission, price, cash, balance) 
+        print("balance: ", balance)
+        if(name == "ETH" or name == "BTC"): # since the balance may be greater than zero but this will restrict it
+            balance_compare = 0.00005
+        else:
+            balance_compare = 0.005
+        if(balance > balance_compare):
+            price_holder = bid # selling the balance
+            balance_holder = 1 # have a balance
+            print("bid: ", price_holder)
+        else:
+            price_holder = ask # buying the asset
+            balance_holder = 0
+            print("ask: ", price_holder)        
+        # print("price: ", price_holder)
+        coin = ct.Currency(name, data_direc, commission, price_holder, cash, balance, balance_holder) 
         action, quantity, networth = coin.DetermineTradeType() # This will need to return an action as well
-        print("Actions ", action, " ", quantity, " ", networth, " ", cash)
-        # action = 2
+        print("Actions ", action, " ", quantity, " ", cash)
+        # action = 1
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
             "name": name,
@@ -94,10 +114,10 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         order_info = False
         if(action == 1):
             # Buy
-            new_price = float(client.GetCurrentPrice(name))
+            new_price = float(client.GetDetailedPrices(name)["ask"])
             print("new_price", new_price)
             if(name == "BTC" or name == "ETH"):
-                quantity = "{:0.0{}f}".format(float(cash/new_price), 5)
+                quantity = "{:0.0{}f}".format(float(cash/new_price), 5) # quantity will not match since above output deducts commission
             else:
                 quantity = "{:0.0{}f}".format(float(cash/new_price), 3)
             print("quantity: ", quantity)
@@ -113,7 +133,7 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
                 quantity = "{:0.0{}f}".format(quantity, 5)
             else:
                 quantity = "{:0.0{}f}".format(quantity, 3)
-            print(quantity)
+            print("quantity: ", quantity)
             order_info = client.SellItem(name, quantity)
             # order_info = client.TestOrder("sell", name, quantity)
             if(order_info == False):
@@ -195,11 +215,11 @@ if __name__ == "__main__":
     actual_home = home + "Actual/"
     client = au.API_Client(API_key_direc, False)
     info, actual_cash = GetCoinInfo(client, names, actual_home) # Gets the price of the asset
+    # Write a history file for the orders. Putting it here to make sure everything gets logged
+    files = WriteHistoryCSV(home, client, info)
+    print(files)
     orders, executions = ExecuteRealTime(client, home, info, actual_cash)
+    # Any writing to documents should be done at the end
     transaction_files, cash_files = CheckOrderStatuses(home, orders)
     print(transaction_files)
     print(cash_files)
-    # Any writing to documents should be done at the end
-    files = WriteHistoryCSV(home, client, info)
-    print(files)
-    # Write a history file for the orders
