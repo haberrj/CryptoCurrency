@@ -36,6 +36,7 @@ def GetCoinInfo(client, names):
     # names is an array of strings
     coins = []
     for name in names:
+<<<<<<< HEAD
         detailed_pricing = client.GetDetailedPrices(name)
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
@@ -43,6 +44,15 @@ def GetCoinInfo(client, names):
             "price":float(detailed_pricing["price"]),
             "bid":float(detailed_pricing["bid"]), # price paid when selling
             "ask":float(detailed_pricing["ask"]) # price paid when buying
+=======
+        detailed_price = client.GetDetailedPrices(name)
+        details = {
+            "time": au.convert_timestamp_to_date(int(time.time())),
+            "name": name,
+            "price":float(detailed_price["price"]),
+            "bid":float(detailed_price["bid"]),
+            "ask":float(detailed_price["ask"])
+>>>>>>> 8cb99be... Added functionality to log the bid and ask prices
         }
         coins.append(details)
     return coins
