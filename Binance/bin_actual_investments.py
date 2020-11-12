@@ -88,8 +88,10 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         commission = value["commission"]
         print(name)
         print("balance: ", balance)
-        if(name == "ETH" or name == "BTC"): # since the balance may be greater than zero but this will restrict it
+        if(name == "ETH" or name == "BTC"): # since the balance may be slightly greater than zero but this will restrict it
             balance_compare = 0.00005
+        elif(name == "BNB"):
+            balance_compare = 1.005 # BNB must be different since it gives me a discount on commission
         else:
             balance_compare = 0.005
         if(balance > balance_compare):
@@ -114,7 +116,7 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         order_info = False
         if(action == 1):
             # Buy
-            new_price = float(client.GetDetailedPrices(name)["ask"])
+            new_price = float(client.GetDetailedPrices(name)["price"]) # this way I don't accidently overestimate the quantity
             print("new_price", new_price)
             if(name == "BTC" or name == "ETH"):
                 quantity = "{:0.0{}f}".format(float(cash/new_price), 5) # quantity will not match since above output deducts commission
@@ -131,6 +133,8 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
             # new_price = float(client.GetCurrentPrice(name))
             if(name == "BTC" or name == "ETH"):
                 quantity = "{:0.0{}f}".format(quantity, 5)
+            elif(name == "BNB"):
+                quantity = "{:0.0{}f}".format((quantity-1), 3) # always keep 1 BNB leftover
             else:
                 quantity = "{:0.0{}f}".format(quantity, 3)
             print("quantity: ", quantity)
