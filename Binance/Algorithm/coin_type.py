@@ -163,7 +163,7 @@ class Currency:
         second_val = self.SecondDerivative(first_val)
         self.thresholds = self.GetThresholds()
         if((self.name == "LINK") or (self.name == "BNB")):
-            sell_off = 0.98
+            sell_off = 0.97
         else:
             sell_off = 0.95
         if(self.cash > 0):

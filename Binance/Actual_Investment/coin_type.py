@@ -158,6 +158,10 @@ class Currency:
         self.thresholds = self.GetThresholds()
         action = 0
         quantity = self.coin
+        if((self.name == "LINK") or (self.name == "BNB")):
+            sell_off = 0.97
+        else:
+            sell_off = 0.95
         if(self.cash > 0):
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
                 self.coin, paid = BuyPercentageCurrency(self.cash, self.current_price, self.commission)
@@ -179,10 +183,10 @@ class Currency:
                 quantity = self.coin
         if(self.coin > 0):
             self.current_holding_price = self.GetCurrentHoldingPrice() # need to set this value otherwise it will be equal to zero and the whole thing will fail
-            if((self.current_price < (self.current_holding_price*0.90)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
+            if((self.current_price < (self.current_holding_price*sell_off)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
-                if((self.isProfitable(self.current_holding_price, self.current_price, self.commission)) or (self.current_price < (self.current_holding_price*0.90))):
+                if((self.isProfitable(self.current_holding_price, self.current_price, self.commission)) or (self.current_price < (self.current_holding_price*sell_off))):
                     # This will only sell if the current holding is profitable or if there is a 0.5% drop in price
                     self.cash, paid = SellPercentageCurrency(self.coin, self.current_price, self.commission)
                     self.coin = 0
