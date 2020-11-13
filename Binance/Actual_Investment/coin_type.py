@@ -33,11 +33,15 @@ def CheckIfFileExits(filename):
 
 class Currency:
     # will add more data as things come up
-    def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance, balance_holder):
+    def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance, balance_holder, bid):
         self.name = name
         self.direc = data_direc
         self.current_price = current_price
+        self.current_bid = 0
+        self.current_ask = 0
         self.last_three_prices = [] # ltp[0] is current price required to determine 2 first_deriv values
+        self.last_three_bid = []
+        self.last_three_ask = []
         self.coin = balance
         self.balance_holder = balance_holder
         self.commission = commission
@@ -100,10 +104,6 @@ class Currency:
     
     def GetPrices(self):
         prices = []
-        if(self.balance_holder == 1): # meaning I have to sell
-            price_point = "bid"
-        else:
-            price_point = "ask" # if I have to buy
         csv_name = self.direc + self.name + "_Realtime.csv"
         if(CheckIfFileExits(csv_name)):
             with open(csv_name, "r") as price_data:
@@ -113,13 +113,23 @@ class Currency:
                     holder.append(value)
             prices = list(reversed(holder))
             for i in range(0,300):
-                if(prices[i][price_point] != ""):
-                    self.last_three_prices.append(float(prices[i][price_point]))
+                if(prices[i]["price"] != ""):
+                    self.last_three_prices.append(float(prices[i]["price"]))
                 else:
                     self.last_three_prices.append(0.0)
+                if(prices[i]["bid"] != ""):
+                    self.last_three_ask.append(float(prices[i]["bid]))
+                else:
+                    self.last_three_ask.append(0.0)
+                if(prices[i]["ask"] != ""):
+                    self.last_three_bid.append(float(prices[i]["ask"]))
+                else:
+                    self.last_three_bid.append(0.0)
         else:
             print("File does not exist")
             sys.exit()
+        self.current_ask = self.last_three_ask[0]
+        self.current_bid = self.last_three_bid[0]
         return self.current_price
         
     def GetBalance(self):
@@ -162,15 +172,15 @@ class Currency:
             sell_off = 0.97
         else:
             sell_off = 0.95
-        if(self.cash > 0):
+        if(self.balance_holder == 0):
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
-                self.coin, paid = BuyPercentageCurrency(self.cash, self.current_price, self.commission)
+                self.coin, paid = BuyPercentageCurrency(self.cash, self.current_ask, self.commission)
                 self.cash = 0
                 networth = self.GetBalance()
                 detailed = {
                     "time":convert_timestamp_to_date(int(time.time())),
                     "transaction": "bought",
-                    "price":self.current_price,
+                    "price":self.current_ask,
                     "cash":self.cash,
                     "coin":self.coin,
                     "networth":networth,
@@ -181,20 +191,20 @@ class Currency:
                 self.current_holding_price = self.current_price
                 action = 1
                 quantity = self.coin
-        if(self.coin > 0):
+        if(self.balance_holder == 1):
             self.current_holding_price = self.GetCurrentHoldingPrice() # need to set this value otherwise it will be equal to zero and the whole thing will fail
-            if((self.current_price < (self.current_holding_price*sell_off)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
+            if((self.current_bid < (self.current_holding_price*sell_off)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
-                if((self.isProfitable(self.current_holding_price, self.current_price, self.commission)) or (self.current_price < (self.current_holding_price*sell_off))):
+                if((self.isProfitable(self.current_holding_price, self.current_bid, self.commission)) or (self.current_bid < (self.current_holding_price*sell_off))):
                     # This will only sell if the current holding is profitable or if there is a 0.5% drop in price
-                    self.cash, paid = SellPercentageCurrency(self.coin, self.current_price, self.commission)
+                    self.cash, paid = SellPercentageCurrency(self.coin, self.current_bid, self.commission)
                     self.coin = 0
                     networth = self.GetBalance()
                     detailed = {
                         "time":convert_timestamp_to_date(int(time.time())),
                         "transaction": "sold",
-                        "price":self.current_price,
+                        "price":self.current_bid,
                         "cash":self.cash,
                         "coin":self.coin,
                         "networth":networth,
