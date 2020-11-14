@@ -14,10 +14,12 @@ import Actual_Investment.coin_type as ct
 parser = argparse.ArgumentParser(description="Find the ideal thresholds for any currency.")
 parser.add_argument("-d", "--home", type=str, required=True, help="The directory for artifacts")
 parser.add_argument("-i", "--currencies", type=str, nargs="+", required=True, help="The names of currencies")
+parser.add_argument("-r", "--run", type=int, required=True, help="Whether or not to run the system")
 
 args = parser.parse_args()
 home = str(args.home)
 currencies = args.currencies
+run = int(args.run)
 names = []
 for name in currencies:
     names.append(str(name).upper())
@@ -103,10 +105,10 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
             balance_holder = 0
             print("ask: ", price_holder)        
         # print("price: ", price_holder)
-        coin = ct.Currency(name, data_direc, commission, price_holder, cash, balance, balance_holder) 
+        coin = ct.Currency(name, data_direc, commission, price_holder, cash, balance, balance_holder, bid, ask) 
         action, quantity, networth = coin.DetermineTradeType() # This will need to return an action as well
         print("Actions ", action, " ", quantity, " ", cash)
-        # action = 1
+        action = 2
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
             "name": name,
@@ -124,13 +126,22 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
                 quantity = "{:0.0{}f}".format(float(cash/new_price), 3)
             print("quantity: ", quantity)
             order_info = client.BuyItem(name, quantity)
+            order_info["price"] = new_price
             # order_info = client.TestOrder("buy", name, quantity)
-            print(order_info)
+            # order_info = {
+            #     "time": "0",
+            #     "name": name,
+            #     "id": "0",
+            #     "price": new_price,
+            #     "status": "FILLED",
+            #     "coin": quantity,
+            #     "type": "BUY"
+            # }
             if(order_info == False):
                 print("Insufficient Funds")
         elif(action == 2):
             # Sell
-            # new_price = float(client.GetCurrentPrice(name))
+            new_price = float(client.GetDetailedPrices(name)["price"]) # this way I don't accidently overestimate the quantity
             if(name == "BTC" or name == "ETH"):
                 quantity = "{:0.0{}f}".format(quantity, 5)
             elif(name == "BNB"):
@@ -139,7 +150,17 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
                 quantity = "{:0.0{}f}".format(quantity, 3)
             print("quantity: ", quantity)
             order_info = client.SellItem(name, quantity)
+            order_info["price"] = new_price
             # order_info = client.TestOrder("sell", name, quantity)
+            # order_info = {
+            #     "time": "0",
+            #     "name": name,
+            #     "id": "0",
+            #     "price": new_price,
+            #     "status": "FILLED",
+            #     "coin": quantity,
+            #     "type": "SELL"
+            # }
             if(order_info == False):
                 print("Error with order")
         order_info_array.append(order_info)
@@ -160,7 +181,7 @@ def GetCashValue(direc, name):
     return amount
 
 def CheckOrderStatuses(direc, orders):
-    data_direc = direc + "/Actual/CSV_Transactions/"
+    data_direc = direc + "Actual/CSV_Transactions/"
     transaction_files = []
     cash_files = []
     for order in orders:
@@ -168,28 +189,28 @@ def CheckOrderStatuses(direc, orders):
             continue
         print(order["name"])
         print(order["status"])
-        if(order["side"] == "SELL"):
+        if(order["type"] == "SELL"):
             name = order["name"]
             price = order["price"]
             quantity = order["coin"]
-            data_direc = direc + "Actual/Balances/"
+            balance_direc = direc + "Actual/Balances/"
             cash = float(price) * float(quantity)
-            cash = "{:0.0{}f}".format(quantity, 2)
+            cash = "{:0.0{}f}".format(cash, 2)
             print(cash)
-            cash_files.append(WriteNewCashAmount(data_direc, name, cash))
-        transaction_files.append(WriteTransactionInfo(direc, order["name"], order))
+            cash_files.append(WriteNewCashAmount(balance_direc, name, cash))
+        transaction_files.append(WriteTransactionInfo(data_direc, order["name"], order))
     return transaction_files, cash_files
 
 def WriteNewCashAmount(data_direc, name, cash):
     filename = data_direc + name + "_Balance.csv"
-    time = au.convert_timestamp_to_date(int(time.time()))
+    time_value = au.convert_timestamp_to_date(int(time.time()))
     if(CheckIfFileExits(filename)):
         with open(filename,'a') as old_csv:
             writer = csv.writer(old_csv)
-            writer.writerow([time, name, price])
+            writer.writerow([time_value, name, cash])
     else:
         details = {
-            "time": time,
+            "time": time_value,
             "name": name,
             "cash": cash
         }
@@ -201,12 +222,12 @@ def WriteNewCashAmount(data_direc, name, cash):
     return filename
 
 def WriteTransactionInfo(direc, name, order):
-    filename = data_direc + order["name"] + "_transactions.csv"
+    filename = direc + order["name"] + "_transactions.csv"
     keys = list(order.keys())
     if(CheckIfFileExits(filename)):
         with open(filename,'a') as old_csv:
             writer = csv.writer(old_csv)
-            writer.writerow([time, name, price])
+            writer.writerow([order["time"], order["name"], order["id"], order["price"], order["status"], order["coin"], order["type"]])
     else:
         with open(filename, 'w') as new_csv:
             writer = csv.DictWriter(new_csv, keys)
@@ -222,8 +243,9 @@ if __name__ == "__main__":
     # Write a history file for the orders. Putting it here to make sure everything gets logged
     files = WriteHistoryCSV(home, client, info)
     print(files)
-    orders, executions = ExecuteRealTime(client, home, info, actual_cash)
-    # Any writing to documents should be done at the end
-    transaction_files, cash_files = CheckOrderStatuses(home, orders)
-    print(transaction_files)
-    print(cash_files)
+    if(run == 1):
+        orders, executions = ExecuteRealTime(client, home, info, actual_cash)
+        # Any writing to documents should be done at the end
+        transaction_files, cash_files = CheckOrderStatuses(home, orders)
+        print(transaction_files)
+        print(cash_files)

@@ -33,12 +33,12 @@ def CheckIfFileExits(filename):
 
 class Currency:
     # will add more data as things come up
-    def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance, balance_holder, bid):
+    def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance, balance_holder, bid, ask):
         self.name = name
         self.direc = data_direc
         self.current_price = current_price
-        self.current_bid = 0
-        self.current_ask = 0
+        self.current_bid = bid
+        self.current_ask = ask
         self.last_three_prices = [] # ltp[0] is current price required to determine 2 first_deriv values
         self.last_three_bid = []
         self.last_three_ask = []
@@ -54,7 +54,7 @@ class Currency:
 
         self.thresholds = self.GetThresholds()
         self.GetPrices()
-        self.current_holding_price = self.GetCurrentHoldingPrice() # needs to get the last price that it was bought for
+        self.current_holding_price, self.last_transaction_type = self.GetCurrentHoldingPrice() # needs to get the last price that it was bought for
         self.sample = self.SetSampleSize()
         self.first_deriv = self.FirstDerivative() # required to determine the second derivative (first_deriv[0] is the important one here)
         self.second_deriv = self.SecondDerivative(self.first_deriv)
@@ -74,10 +74,15 @@ class Currency:
             price = float(transactions[0]["price"])
         except ValueError:
             price = 0
-        return price
+        try:
+            last_transaction_type = str(transactions[0]["type"]).upper()
+        except ValueError:
+            last_transaction_type = "SELL"
+        print(price)
+        return price, last_transaction_type
 
     def ReadPreviousTransactions(self):
-        csv_name = self.direc + "Actual/CSV_Transaction_Data/" + self.name + "_Transactions.csv"
+        csv_name = self.direc + "Actual/CSV_Transactions/" + self.name + "_transactions.csv"
         if(CheckIfFileExits(csv_name)):
             with open(csv_name, "r") as transaction_data:
                 history_values = csv.DictReader(transaction_data)
@@ -118,7 +123,7 @@ class Currency:
                 else:
                     self.last_three_prices.append(0.0)
                 if(prices[i]["bid"] != ""):
-                    self.last_three_ask.append(float(prices[i]["bid]))
+                    self.last_three_ask.append(float(prices[i]["bid"]))
                 else:
                     self.last_three_ask.append(0.0)
                 if(prices[i]["ask"] != ""):
@@ -172,7 +177,7 @@ class Currency:
             sell_off = 0.97
         else:
             sell_off = 0.95
-        if(self.balance_holder == 0):
+        if(self.last_transaction_type == "SELL"): # Buy
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
                 self.coin, paid = BuyPercentageCurrency(self.cash, self.current_ask, self.commission)
                 self.cash = 0
@@ -191,8 +196,7 @@ class Currency:
                 self.current_holding_price = self.current_price
                 action = 1
                 quantity = self.coin
-        if(self.balance_holder == 1):
-            self.current_holding_price = self.GetCurrentHoldingPrice() # need to set this value otherwise it will be equal to zero and the whole thing will fail
+        if(self.last_transaction_type == "BUY"):
             if((self.current_bid < (self.current_holding_price*sell_off)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
@@ -218,7 +222,7 @@ class Currency:
         return action, quantity, networth
 
     def WriteSaleDataToCSV(self, details):
-        csv_name = self.direc + "Actual/CSV_Transaction_Data/" + self.name + "_Transactions.csv"
+        csv_name = self.direc + "Actual/Predicted_Data/" + self.name + "_Transactions.csv"
         if(CheckIfFileExits(csv_name)):
             with open(csv_name,'a') as old_csv:
                 writer = csv.writer(old_csv)
@@ -228,7 +232,7 @@ class Currency:
             with open(csv_name, 'w') as new_csv:
                 writer = csv.DictWriter(new_csv, keys)
                 writer.writeheader()
-                writer.writerow(info_dict)
+                writer.writerow(details)
         return csv_name
     
     def WriteLastTransactionJson(self, details):
