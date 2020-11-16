@@ -108,7 +108,7 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         coin = ct.Currency(name, data_direc, commission, price_holder, cash, balance, balance_holder, bid, ask) 
         action, quantity, networth = coin.DetermineTradeType() # This will need to return an action as well
         print("Actions ", action, " ", quantity, " ", cash)
-        action = 2
+        # action = 2
         details = {
             "time": au.convert_timestamp_to_date(int(time.time())),
             "name": name,
