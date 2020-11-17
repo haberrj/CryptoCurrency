@@ -138,8 +138,7 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
             # order_info = client.SellItem(name, quantity)
             # order_info["price"] = new_price
             order_info = client.TestOrder("sell", name, quantity)
-            order_info = { = client.SellItem(name, quantity)
-            # order_info
+            order_info = { 
                 "time": "0",
                 "name": name,
                 "id": "0",
