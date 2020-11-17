@@ -6,9 +6,9 @@ client = au.API_Client("/media/pi/HaberServer/Crypto_Share/API_Utils/Binance/", 
 # print(client.GetAccountDetails())
 BNB = float(client.GetAssetBalance("BNB")["free"])
 print(BNB)
-commission = client.GetCommission("BNB")
+commission = client.GetCommission("BNB") * 0.75
 print(commission)
-commission = client.GetCommission("LINK")
+commission = client.GetCommission("LINK") * 0.75
 print(commission)
 # cash = 1000.0
 # print(cash)
