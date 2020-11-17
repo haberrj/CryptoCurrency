@@ -178,7 +178,7 @@ def CheckOrderStatuses(client, direc, orders):
         if(order["type"] == "SELL"):
             name = order["name"]
             id_num = order["id"]
-            new_info = client.GetOrderDetails(id_num, symbol)
+            new_info = client.GetOrderDetails(id_num, name)
             price = order["price"]
             quantity = new_info["executedQty"]
             balance_direc = direc + "Actual/Balances/"
