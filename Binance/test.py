@@ -6,6 +6,12 @@ client = au.API_Client("/media/pi/HaberServer/Crypto_Share/API_Utils/Binance/", 
 # print(client.GetAccountDetails())
 BNB = float(client.GetAssetBalance("BNB")["free"])
 print(BNB)
+
+order_info = client.GetOrderDetails(1427996, "LINK")
+print(order_info)
+cash = order_info["cummulativeQuoteQty"]
+quantity = order_info["executedQty"]
+print("Cash: ", cash, " Quantity: ", quantity)
 # cash = 1000.0
 # print(cash)
 # price = float(client.GetCurrentPrice("LINK"))

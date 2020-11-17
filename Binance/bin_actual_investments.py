@@ -179,10 +179,10 @@ def CheckOrderStatuses(client, direc, orders):
             name = order["name"]
             id_num = order["id"]
             new_info = client.GetOrderDetails(id_num, symbol)
-            price = new_info["price"]
+            price = order["price"]
             quantity = new_info["executedQty"]
             balance_direc = direc + "Actual/Balances/"
-            cash = float(price) * float(quantity)
+            cash = float(new_info["cummulativeQuoteQty"])
             cash = "{:0.0{}f}".format(cash, 2)
             print(cash)
             cash_files.append(WriteNewCashAmount(balance_direc, name, cash))
