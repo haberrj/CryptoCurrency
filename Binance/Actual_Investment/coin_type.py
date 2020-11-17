@@ -190,7 +190,7 @@ class Currency:
                 self.current_holding_price = self.current_price
                 action = 1
                 quantity = self.coin
-        if(self.last_transaction_type == "BUY"):
+        elif(self.last_transaction_type == "BUY"):
             if((self.current_bid < (self.current_holding_price*sell_off)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
