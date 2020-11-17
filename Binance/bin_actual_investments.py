@@ -47,7 +47,7 @@ def GetCoinInfo(client, names, direc):
             "ask":float(detailed_price["ask"]),
             "balance": balance,
             "last_cash": GetCashValue(direc, name),
-            "commission": float(client.GetCommission(name))
+            "commission": float(client.GetCommission(name)) * 0.75 # since I get a discount but it's not calculated
         }
         coins.append(details)
     actual_cash = client.GetAssetBalance("EUR")["free"] # This will need to be changed somehow for the current cash amount
