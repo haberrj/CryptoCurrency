@@ -90,22 +90,7 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         commission = value["commission"]
         print(name)
         print("balance: ", balance)
-        if(name == "ETH" or name == "BTC"): # since the balance may be slightly greater than zero but this will restrict it
-            balance_compare = 0.00005
-        elif(name == "BNB"):
-            balance_compare = 1.005 # BNB must be different since it gives me a discount on commission
-        else:
-            balance_compare = 0.005
-        if(balance > balance_compare):
-            price_holder = bid # selling the balance
-            balance_holder = 1 # have a balance
-            print("bid: ", price_holder)
-        else:
-            price_holder = ask # buying the asset
-            balance_holder = 0
-            print("ask: ", price_holder)        
-        # print("price: ", price_holder)
-        coin = ct.Currency(name, data_direc, commission, price_holder, cash, balance, balance_holder, bid, ask) 
+        coin = ct.Currency(name, data_direc, commission, price, cash, balance, bid, ask) 
         action, quantity, networth = coin.DetermineTradeType() # This will need to return an action as well
         print("Actions ", action, " ", quantity, " ", cash)
         # action = 2

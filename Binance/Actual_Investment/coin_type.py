@@ -33,7 +33,7 @@ def CheckIfFileExits(filename):
 
 class Currency:
     # will add more data as things come up
-    def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance, balance_holder, bid, ask):
+    def __init__(self, name, data_direc, commission, current_price, cash_allowance, balance, bid, ask):
         self.name = name
         self.direc = data_direc
         self.current_price = current_price
@@ -43,14 +43,8 @@ class Currency:
         self.last_three_bid = []
         self.last_three_ask = []
         self.coin = balance
-        self.balance_holder = balance_holder
+        self.cash = cash_allowance
         self.commission = commission
-
-        # Set cash amount
-        if(self.balance_holder == 0):
-            self.cash = cash_allowance
-        else:
-            self.cash = 0
 
         self.thresholds = self.GetThresholds()
         self.GetPrices()
