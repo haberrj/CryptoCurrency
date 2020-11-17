@@ -165,6 +165,11 @@ class API_Client:
             client.API_URL = 'https://testnet.binance.vision/api'
         return True
     
+    def GetOrderDetails(self, order_num, symbol):
+        ticker = symbol.upper() + "EUR"
+        order_info = self.client.get_order(str(order_num), symbol)
+        return order_info
+
     def GetAPIKeys(self):
         public_file_encrypted = self.home + 'API_Binance_public_key_encrypted'
         secret_file_encrypted = self.home + 'API_Binance_secret_key_encrypted'

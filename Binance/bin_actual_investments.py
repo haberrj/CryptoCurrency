@@ -166,7 +166,7 @@ def GetCashValue(direc, name):
         return
     return amount
 
-def CheckOrderStatuses(direc, orders):
+def CheckOrderStatuses(client, direc, orders):
     data_direc = direc + "Actual/CSV_Transactions/"
     transaction_files = []
     cash_files = []
@@ -177,8 +177,10 @@ def CheckOrderStatuses(direc, orders):
         print(order["status"])
         if(order["type"] == "SELL"):
             name = order["name"]
-            price = order["price"]
-            quantity = order["coin"]
+            id_num = order["id"]
+            new_info = client.GetOrderDetails(id_num, symbol)
+            price = new_info["price"]
+            quantity = new_info["executedQty"]
             balance_direc = direc + "Actual/Balances/"
             cash = float(price) * float(quantity)
             cash = "{:0.0{}f}".format(cash, 2)
@@ -232,6 +234,6 @@ if __name__ == "__main__":
     if(run == 1):
         orders, executions = ExecuteRealTime(client, home, info, actual_cash)
         # Any writing to documents should be done at the end
-        transaction_files, cash_files = CheckOrderStatuses(home, orders)
+        transaction_files, cash_files = CheckOrderStatuses(client, home, orders)
         print(transaction_files)
         print(cash_files)
