@@ -8,7 +8,7 @@
 cd /home/pi/CryptoCurrency/
 git pull
 
-python3 /home/pi/CryptoCurrency/Binance/Algorithm/Backtest/threshold_executer.py -d /media/pi/HaberServer/Crypto_Share/Binance/ -c 1000.00 -i BTC -t 20 15 15 15 -p 0.00075 &
+python3 /home/pi/CryptoCurrency/Binance/Algorithm/Backtest/threshold_executer.py -d /media/pi/HaberServer/Crypto_Share/Binance/ -c 1000.00 -i BTC -t 30 15 15 15 -p 0.00075 &
 P1=$!
 python3 /home/pi/CryptoCurrency/Binance/Algorithm/Backtest/threshold_executer.py -d /media/pi/HaberServer/Crypto_Share/Binance/ -c 1000.00 -i ETH -t 15 15 15 15 -p 0.00075 &
 P2=$!
