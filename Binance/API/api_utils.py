@@ -167,6 +167,7 @@ class API_Client:
     
     def GetOrderDetails(self, order_num, symbol):
         ticker = symbol.upper() + "EUR"
+        print(ticker)
         order_info = self.client.get_order(orderId=str(order_num), symbol=ticker)
         return order_info
 
