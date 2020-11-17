@@ -171,10 +171,10 @@ class API_Client:
         return order_info
 
     def GetAPIKeys(self):
-        public_file_encrypted = self.home + 'API_Binance_public_key_encrypted'
-        secret_file_encrypted = self.home + 'API_Binance_secret_key_encrypted'
-        public_file = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", public_file_encrypted, "/home/pi/Bookshelf/API_Binance_public_key")
-        secret_file = dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", secret_file_encrypted, "/home/pi/Bookshelf/API_Binance_secret_key")
+        public_file_encrypted = "/home/ronhaber/Documents/API_Utils/Binance_Encrypted/API_Binance_public_key_encrypted"#self.home + 'API_Binance_public_key_encrypted'
+        secret_file_encrypted = "/home/ronhaber/Documents/API_Utils/Binance_Encrypted/API_Binance_secret_key_encrypted"#self.home + 'API_Binance_secret_key_encrypted'
+        public_file = dak.GetAPIKeyFile("/home/ronhaber/Documents/API_Utils/api.key", public_file_encrypted, "/home/ronhaber/Documents/API_Utils/API_Binance_public_key")#dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", public_file_encrypted, "/home/pi/Bookshelf/API_Binance_public_key")
+        secret_file = dak.GetAPIKeyFile("/home/ronhaber/Documents/API_Utils/api.key", secret_file_encrypted, "/home/ronhaber/Documents/API_Utils/API_Binance_secret_key")#dak.GetAPIKeyFile("/home/pi/Bookshelf/api.key", secret_file_encrypted, "/home/pi/Bookshelf/API_Binance_secret_key")
         with open(secret_file, 'r') as secret:
             secret_key = secret.read()
             secret_key = secret_key[:-1]
