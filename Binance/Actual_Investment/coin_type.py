@@ -168,7 +168,7 @@ class Currency:
         action = 0
         quantity = self.coin
         if((self.name == "LINK") or (self.name == "BNB")):
-            sell_off = 0.97
+            sell_off = 0.95
         else:
             sell_off = 0.95
         if(self.last_transaction_type == "SELL"): # Buy
