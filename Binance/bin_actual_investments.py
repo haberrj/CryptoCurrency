@@ -187,6 +187,8 @@ def CheckOrderStatuses(client, direc, orders):
                 quantity = order["coin"]
                 cash = float(price) - float(quantity)
             balance_direc = direc + "Actual/Balances/"
+            if(cash < 0):
+                cash = float(price) - float(quantity)
             cash = "{:0.0{}f}".format(cash, 2)
             print(cash)
             cash_files.append(WriteNewCashAmount(balance_direc, name, cash))
