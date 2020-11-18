@@ -55,9 +55,9 @@ class Currency:
     
     def SetSampleSize(self):
         if(self.name == "BTC"):
-            sample = 67
+            sample = 2
         elif(self.name == "ETH"):
-            sample = 67
+            sample = 2
         else: # BNB and LINK for now since short term
             sample = 2
         return sample
