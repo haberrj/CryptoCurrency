@@ -88,7 +88,6 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
         bid = value["bid"]
         ask = value["ask"]
         commission = value["commission"]
-        print("commission: ", commission)
         print(name)
         print("balance: ", balance)
         coin = ct.Currency(name, data_direc, commission, price, cash, balance, bid, ask) 
