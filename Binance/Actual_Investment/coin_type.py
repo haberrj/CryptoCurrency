@@ -166,6 +166,7 @@ class Currency:
         self.thresholds = self.GetThresholds()
         print("Current holding price: ", self.current_holding_price)
         print("Last transaction type: ", self.last_transaction_type)
+        print("Current bid price: ", self.current_bid)
         print("Thresholds: ", self.thresholds)
         print("First deriv: ", first_val[0])
         print("Second deriv: ", second_val)
