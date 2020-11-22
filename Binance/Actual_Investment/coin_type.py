@@ -173,6 +173,7 @@ class Currency:
         else:
             sell_off = 0.95
         if(self.last_transaction_type == "SELL"): # Buy
+            print("SELL")
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
                 self.coin, paid = BuyPercentageCurrency(self.cash, self.current_ask, self.commission)
                 self.cash = 0
@@ -192,6 +193,7 @@ class Currency:
                 action = 1
                 quantity = self.coin
         elif(self.last_transaction_type == "BUY"):
+            print("BUY")
             if((self.current_bid < (self.current_holding_price*sell_off)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
