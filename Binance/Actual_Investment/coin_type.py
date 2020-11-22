@@ -73,6 +73,7 @@ class Currency:
         except ValueError:
             last_transaction_type = "SELL"
         print(price)
+        print(last_transaction_type)
         return price, last_transaction_type
 
     def ReadPreviousTransactions(self):
