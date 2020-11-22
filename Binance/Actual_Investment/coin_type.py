@@ -167,8 +167,8 @@ class Currency:
         self.thresholds = self.GetThresholds()
         action = 0
         quantity = self.coin
-        if((self.name == "LINK") or (self.name == "BNB")):
-            sell_off = 0.95
+        if((self.name == "LINK")):
+            sell_off = 0.97 # to prevent loss due to volatility
         else:
             sell_off = 0.95
         if(self.last_transaction_type == "SELL"): # Buy
