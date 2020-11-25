@@ -175,7 +175,7 @@ class Currency:
         if((self.name == "LINK")):
             sell_off = 0.90 # to prevent loss due to volatility
         else:
-            sell_off = 0.90
+            sell_off = 0.93
         if(self.last_transaction_type == "SELL"): # Buy
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
                 self.coin, paid = BuyPercentageCurrency(self.cash, self.current_ask, self.commission)
