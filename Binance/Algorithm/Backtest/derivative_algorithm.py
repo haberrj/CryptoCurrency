@@ -67,9 +67,9 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
     data_len = len(second_deriv)
 
     for i in range(0, data_len):
-        time = price_data[i+2]["time"]
-        price = price_data[i+2]["price"]
-        first_val = first_deriv[i+1]["price_deriv"]
+        time = price_data[i+4]["time"]
+        price = price_data[i+4]["price"]
+        first_val = first_deriv[i+2]["price_deriv"]
         second_val = second_deriv[i]["price_deriv"]
         # Buy 
         if(cash > 0): # >0 since I have no idea if I'll be negative
@@ -85,7 +85,9 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
                     "cash":cash,
                     "coin":wallet,
                     "networth":SellPercentageCurrency(wallet, price, commission)[0],
-                    "commission":paid
+                    "commission":paid,
+                    "First":first_val,
+                    "Second":second_val
                 }
                 last_buy_price = price
                 transaction_data.append(detailed)
@@ -104,7 +106,9 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
                         "cash":cash,
                         "coin":wallet,
                         "networth": cash,
-                        "commission":paid
+                        "commission":paid,
+                        "First":first_val,
+                        "Second":second_val
                     }
                     transaction_data.append(detailed)
     try:
