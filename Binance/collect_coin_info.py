@@ -5,7 +5,10 @@
 # This script will capture crypto that I am not currently trading
 
 import os, sys
+import os.path
+import csv, json
 import argparse
+import time
 import API.api_utils as au
 
 parser = argparse.ArgumentParser(description="Find the ideal thresholds for any currency.")
@@ -19,10 +22,12 @@ names = []
 for name in currencies:
     names.append(str(name).upper())
 
-def GetCoinInfo(client, names, direc):
+def CheckIfFileExits(filename):
+    return os.path.isfile(filename)
+
+def GetCoinInfo(client, names):
     # names is an array of strings
     coins = []
-    direc = direc + "Balances/"
     for name in names:
         detailed_price = client.GetDetailedPrices(name)
         details = {
@@ -33,7 +38,7 @@ def GetCoinInfo(client, names, direc):
             "ask":float(detailed_price["ask"]),
         }
         coins.append(details)
-    return coins, actual_cash
+    return coins
 
 def WriteHistoryCSV(direc, client, coins):
     files = []
@@ -61,7 +66,7 @@ def WriteHistoryCSV(direc, client, coins):
 if __name__ == "__main__":
     API_key_direc = "/media/pi/HaberServer/Crypto_Share/API_Utils/Binance/"
     client = au.API_Client(API_key_direc, False)
-    info = GetCoinInfo(client, names, actual_home) # Gets the price of the asset
+    info = GetCoinInfo(client, names) # Gets the price of the asset
     # Write a history file for the orders. Putting it here to make sure everything gets logged
     files = WriteHistoryCSV(home, client, info)
     print(info)
