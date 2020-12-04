@@ -11,22 +11,22 @@ import time, sys
 import currency as ghp 
 import derivative_algorithm as da 
 
-def CalculateThresholds(currency_obj, cash, commission, fb_max, sb_max, fs_max, ss_max):
+def CalculateThresholds(currency_obj, cash, commission, fb_max, sb_max, fs_max, ss_max, sample):
     # currency_obj is the class Crypto
     # need to include currency differentiation
     name = currency_obj.name
     if(name == "BTC"):
         multiplier = 1
-        sample = 2
+        # sample = 2
     elif(name == "ETH"):
         multiplier = 8
-        sample = 2
+        # sample = 2
     elif(name == "BNB"):
         multiplier = 80
-        sample = 2
+        # sample = 2
     else:
         multiplier = 800 # value could potentially change
-        sample = 2
+        # sample = 2
     dataset = currency_obj.GetCoinPriceList()
     first_deriv = da.FirstDerivative2Data(dataset, sample)
     second_deriv = da.SecondDerivative2Data(first_deriv, sample)
