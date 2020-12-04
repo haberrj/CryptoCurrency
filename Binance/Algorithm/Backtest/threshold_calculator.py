@@ -43,7 +43,7 @@ def CalculateThresholds(currency_obj, cash, commission, fb_max, sb_max, fs_max, 
                 thresh_holder[0] = fb/float(multiplier)
                 for ss in range(-1*ss_max, ss_max, 1): 
                     thresh_holder[3] = ss/float(multiplier)
-                    transactions, final = da.TradingCurrency(dataset, first_deriv, second_deriv, cash, commission, thresh_holder)
+                    transactions, final = da.TradingCurrency(dataset, first_deriv, second_deriv, cash, commission, thresh_holder, sample)
                     wallet.append(final)
                     new_thresh = [fb/float(multiplier), sb/float(multiplier), fs/float(multiplier), ss/float(multiplier)]
                     thr.append(new_thresh)
