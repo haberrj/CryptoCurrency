@@ -22,13 +22,13 @@ parser.add_argument("-t", "--threshold_limits", type=int, nargs=4, required=True
 parser.add_argument("-p", "--commission", type=float, required=True, help="The commission percentage taken by the broker")
 args = parser.parse_args()
 
-def CurrencyExecution(currency_type, price_path, json_path, cash, commission, threshold_limits):
+def CurrencyExecution(currency_type, price_path, json_path, cash, commission, threshold_limits, sample):
     csv_path = price_path + currency_type + "_Transactions.csv"
     price_path = price_path + currency_type + "_Realtime.csv"
     json_path = json_path + currency_type.lower() + "_thresholds.json"
     Coin = ghp.Crypto(currency_type, price_path, json_path)
     threshold_array, wallet_array = tc.CalculateThresholds(Coin, cash, commission, 
-                                    threshold_limits[0], threshold_limits[1], threshold_limits[2], threshold_limits[3])
+                                    threshold_limits[0], threshold_limits[1], threshold_limits[2], threshold_limits[3], sample)
     max_threshold, max_amount = tc.GetMaxThreshold(threshold_array, wallet_array)
     print(max_amount)
     WriteInfoToJson(Coin, max_threshold, max_amount, json_path)
@@ -54,7 +54,7 @@ def ThresholdLog(currency_type, price_path, json_path, cash, commission, thresho
     dataset = Coin.GetCoinPriceList()
     first_deriv = da.FirstDerivative2Data(dataset, sample)
     second_deriv = da.SecondDerivative2Data(first_deriv, sample)
-    transactions, final = da.TradingCurrency(dataset, first_deriv, second_deriv, cash, commission, threshold)
+    transactions, final = da.TradingCurrency(dataset, first_deriv, second_deriv, cash, commission, threshold, sample)
     WriteInfoToCSV(csv_path, transactions)
 
 def WriteInfoToCSV(csv_name, details):

@@ -11,22 +11,20 @@ import time, sys
 import currency as ghp 
 import derivative_algorithm as da 
 
-def CalculateThresholds(currency_obj, cash, commission, fb_max, sb_max, fs_max, ss_max):
+def CalculateThresholds(currency_obj, cash, commission, fb_max, sb_max, fs_max, ss_max, sample):
     # currency_obj is the class Crypto
     # need to include currency differentiation
     name = currency_obj.name
     if(name == "BTC"):
         multiplier = 1
-        sample = 2
     elif(name == "ETH"):
         multiplier = 8
-        sample = 2
     elif(name == "BNB"):
         multiplier = 80
-        sample = 2
+    elif(name == "LTC"):
+        multiplier = 80
     else:
         multiplier = 800 # value could potentially change
-        sample = 2
     dataset = currency_obj.GetCoinPriceList()
     first_deriv = da.FirstDerivative2Data(dataset, sample)
     second_deriv = da.SecondDerivative2Data(first_deriv, sample)
@@ -43,7 +41,7 @@ def CalculateThresholds(currency_obj, cash, commission, fb_max, sb_max, fs_max, 
                 thresh_holder[0] = fb/float(multiplier)
                 for ss in range(-1*ss_max, ss_max, 1): 
                     thresh_holder[3] = ss/float(multiplier)
-                    transactions, final = da.TradingCurrency(dataset, first_deriv, second_deriv, cash, commission, thresh_holder)
+                    transactions, final = da.TradingCurrency(dataset, first_deriv, second_deriv, cash, commission, thresh_holder, sample)
                     wallet.append(final)
                     new_thresh = [fb/float(multiplier), sb/float(multiplier), fs/float(multiplier), ss/float(multiplier)]
                     thr.append(new_thresh)
