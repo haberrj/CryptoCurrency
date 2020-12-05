@@ -61,6 +61,7 @@ def WriteInfoToCSV(csv_name, details):
     try:
         keys = list(details[0].keys())
     except IndexError:
+        print("Transaction CSV not created")
         return csv_name
     with open(csv_name, 'w') as new_csv:
         writer = csv.DictWriter(new_csv, keys)
