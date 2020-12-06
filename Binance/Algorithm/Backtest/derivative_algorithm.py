@@ -52,7 +52,7 @@ def SellPercentageCurrency(currency, price, commission):
     paid = amount - new_amount
     return new_amount, paid
 
-def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commission, thresholds):
+def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commission, thresholds, sample):
     # Thresholds are the thresholds for buying and selling
     #thresholds
     first_buy_thresh = thresholds[0]
@@ -67,9 +67,9 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
     data_len = len(second_deriv)
 
     for i in range(0, data_len):
-        time = price_data[i+4]["time"]
-        price = price_data[i+4]["price"]
-        first_val = first_deriv[i+2]["price_deriv"]
+        time = price_data[i+(2*sample)]["time"]
+        price = price_data[i+(2*sample)]["price"]
+        first_val = first_deriv[i+sample]["price_deriv"]
         second_val = second_deriv[i]["price_deriv"]
         # Buy 
         if(cash > 0): # >0 since I have no idea if I'll be negative
@@ -90,9 +90,9 @@ def TradingCurrency(price_data, first_deriv, second_deriv, current_amount, commi
                 last_buy_price = price
                 transaction_data.append(detailed)
         if(wallet > 0):
-            if((first_val > first_sell_thresh and second_val < second_sell_thresh) or (price < 0.95*last_buy_price)):
+            if((first_val > first_sell_thresh and second_val < second_sell_thresh) or (price < 0.92*last_buy_price)):
                 # This part will change to send a sell command to the api 
-                if((CheckProfitability(last_buy_price, price, commission)) or (price < 0.95*last_buy_price)):
+                if((CheckProfitability(last_buy_price, price, commission)) or (price < 0.92*last_buy_price)):
                 # removed the profitability since I want just the buy indices
                     cash, paid = SellPercentageCurrency(wallet, price, commission)
                     # This part will change to send a sell command to the api
