@@ -173,9 +173,11 @@ class Currency:
         action = 0
         quantity = self.coin
         if((self.name == "LINK")):
-            sell_off = 0.92 # to prevent loss due to volatility
+            absolute_sell_off = 0.85 # This is the worst case
+            sell_off = 0.98 # This will allow trading during dips
         else:
-            sell_off = 0.92
+            absolute_sell_off = 0.85 # This is the worst case
+            sell_off = 0.98
         if(self.last_transaction_type == "SELL"): # Buy
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
                 self.coin, paid = BuyPercentageCurrency(self.cash, self.current_ask, self.commission)
@@ -196,7 +198,7 @@ class Currency:
                 action = 1
                 quantity = self.coin
         elif(self.last_transaction_type == "BUY"):
-            if((self.current_bid < (self.current_holding_price*sell_off)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
+            if((self.current_bid < (self.current_holding_price*absolute_sell_off)) or (first_val[0] > self.thresholds[2] and second_val < self.thresholds[3])):
                 # the addition of the holding price becoming too low will auto cause a sale of the asset itself
                 # this will prevent severe loss in the case of the underlying losing value
                 if((self.isProfitable(self.current_holding_price, self.current_bid, self.commission)) or (self.current_bid < (self.current_holding_price*sell_off))):
