@@ -173,17 +173,11 @@ class Currency:
         action = 0
         quantity = self.coin
         if((self.name == "LINK")):
-<<<<<<< HEAD
-            absolute_sell_off = 0.85 # This is the worst case
-            sell_off = 0.98 # This will allow trading during dips
+            absolute_sell_off = 0.85
+            sell_off = 0.98 # allowing the currency to be sold below a certain amount
         else:
-            absolute_sell_off = 0.85 # This is the worst case
+            absolute_sell_off = 0.85
             sell_off = 0.98
-=======
-            sell_off = 0.90 # to prevent loss due to volatility
-        else:
-            sell_off = 0.90
->>>>>>> a4cf326fa14eb1b1ef7e818fdc2260e720c5dac1
         if(self.last_transaction_type == "SELL"): # Buy
             if(first_val[0] < self.thresholds[0] and second_val > self.thresholds[1]):
                 self.coin, paid = BuyPercentageCurrency(self.cash, self.current_ask, self.commission)
