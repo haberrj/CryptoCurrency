@@ -78,7 +78,7 @@ if __name__ == "__main__":
     cash = args.cash
     currency_type = (args.currency).upper()
     commission = args.commission
-    sample = 15
+    sample = 2
     threshold, amount, json_file = CurrencyExecution(currency_type, price_path, json_path, cash, commission, threshold_limits, sample)
     print("The ideal thresholds are: ", threshold)
     print("That will produce a max amount of: ", "{:,.2f}".format(amount), "€")
