@@ -55,11 +55,11 @@ class Currency:
     
     def SetSampleSize(self):
         if(self.name == "BTC"):
-            sample = 2
+            sample = 15
         elif(self.name == "ETH"):
-            sample = 2
+            sample = 15 
         else: # BNB and LINK for now since short term
-            sample = 2
+            sample = 15
         return sample
 
     def GetCurrentHoldingPrice(self):
