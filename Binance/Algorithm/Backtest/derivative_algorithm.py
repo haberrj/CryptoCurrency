@@ -119,7 +119,7 @@ def CheckProfitability(last_price, current_price, commission):
     total_comm = previous_commission + current_commission
     revenue = current_price - last_price
     profit = revenue - total_comm
-    if(profit >= commission):
+    if(profit >= (current_commission/2.0)):
         # This will make the system only choose profitable transactions
         return True
     else:
