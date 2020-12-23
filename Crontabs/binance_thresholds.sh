@@ -16,6 +16,6 @@ python3 /home/pi/CryptoCurrency/Binance/Algorithm/Backtest/threshold_executer.py
 P2=$!
 python3 /home/pi/CryptoCurrency/Binance/Algorithm/Backtest/threshold_executer.py -d /media/pi/HaberServer/Crypto_Share/Binance/ -c 1000.00 -i LTC -t 15 15 15 15 -p 0.00075 &
 P3=$!
-python3 /home/pi/CryptoCurrency/Binance/Algorithm/Backtest/threshold_executer.py -d /media/pi/HaberServer/Crypto_Share/Binance/ -c 1000.00 -i BNB -t 15 15 15 15 -p 0.00075 &
-P4=$!
-wait $P1 $P2 $P3 $P4
+# python3 /home/pi/CryptoCurrency/Binance/Algorithm/Backtest/threshold_executer.py -d /media/pi/HaberServer/Crypto_Share/Binance/ -c 1000.00 -i BNB -t 15 15 15 15 -p 0.00075 &
+# P4=$!
+wait $P1 $P2 $P3 
