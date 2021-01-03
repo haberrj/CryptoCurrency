@@ -136,13 +136,13 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
             # Sell
             new_price = float(client.GetDetailedPrices(name)["price"]) # this way I don't accidently overestimate the quantity
             if(name == "BTC" or name == "ETH"):
-                quantity = float(RoundValueDown(quantity, 5)
+                quantity = float(RoundValueDown(quantity, 5))
                 quantity = "{:0.0{}f}".format(quantity, 5)
             elif(name == "BNB"):
-                quantity = float(RoundValueDown(quantity, 3)
+                quantity = float(RoundValueDown(quantity, 3))
                 quantity = "{:0.0{}f}".format((quantity-1), 3) # always keep 1 BNB leftover
             else:
-                quantity = float(RoundValueDown(quantity, 3)
+                quantity = float(RoundValueDown(quantity, 3))
                 quantity = "{:0.0{}f}".format(quantity, 3)
             print("quantity: ", quantity)
             order_info = client.SellItem(name, quantity)
