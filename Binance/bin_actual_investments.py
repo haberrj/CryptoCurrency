@@ -192,10 +192,10 @@ def CheckOrderStatuses(client, direc, orders):
             try:
                 new_info = client.GetOrderDetails(id_num, name)
                 quantity = new_info["executedQty"]
-                cash = float(new_info["cummulativeQuoteQty"]) - 1.0 # This prevents the constant loss of cash to over buying
+                cash = float(new_info["cummulativeQuoteQty"]) - (float(new_info["cummulativeQuoteQty"])*0.0012) # This prevents the constant loss of cash to over buying
             except:
                 quantity = order["coin"]
-                cash = (float(price) * float(quantity)) - 1.0 
+                cash = (float(price) * float(quantity)) - (float(price) * float(quantity) * 0.0012) # This will make the system self-sustaining by saving the commission  
             balance_direc = direc + "Actual/Balances/"
             if(cash < 0):
                 cash = float(price) * float(quantity)
