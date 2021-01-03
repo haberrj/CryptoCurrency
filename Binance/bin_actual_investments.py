@@ -6,6 +6,7 @@
 
 import os, sys
 import os.path
+import math
 import csv, json, time
 import argparse
 import API.api_utils as au
@@ -26,6 +27,13 @@ for name in currencies:
 
 def CheckIfFileExits(filename):
     return os.path.isfile(filename)
+
+def RoundValueDown(number, decimals):
+    if(decimals == 0):
+        return math.floor(number)
+    factor = 10 ** decimals
+    new_val = math.floor(number * factor)/factor
+    return new_val
 
 def GetCoinInfo(client, names, direc):
     # names is an array of strings
@@ -128,10 +136,13 @@ def ExecuteRealTime(client, data_direc, info, actual_cash):
             # Sell
             new_price = float(client.GetDetailedPrices(name)["price"]) # this way I don't accidently overestimate the quantity
             if(name == "BTC" or name == "ETH"):
+                quantity = float(RoundValueDown(quantity, 5)
                 quantity = "{:0.0{}f}".format(quantity, 5)
             elif(name == "BNB"):
+                quantity = float(RoundValueDown(quantity, 3)
                 quantity = "{:0.0{}f}".format((quantity-1), 3) # always keep 1 BNB leftover
             else:
+                quantity = float(RoundValueDown(quantity, 3)
                 quantity = "{:0.0{}f}".format(quantity, 3)
             print("quantity: ", quantity)
             order_info = client.SellItem(name, quantity)
