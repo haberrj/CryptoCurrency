@@ -27,3 +27,13 @@ python3 /home/pi/CryptoCurrency/Utility/create_sqldb.py -c /media/pi/HaberServer
 python3 /home/pi/CryptoCurrency/Utility/create_sqldb.py -c /media/pi/HaberServer/Crypto_Share/Binance/Actual/Balances/ETH_Balance.csv -n ETH_Balance
 python3 /home/pi/CryptoCurrency/Utility/create_sqldb.py -c /media/pi/HaberServer/Crypto_Share/Binance/Actual/Balances/LTC_Balance.csv -n LTC_Balance
 # python3 /home/pi/CryptoCurrency/Utility/create_sqldb.py -c /media/pi/HaberServer/Crypto_Share/Binance/Actual/Balances/BNB_Balance.csv -n BNB_Balance
+
+# Creation of graphs
+# Balances
+python3 /home/pi/CryptoCurrency/Utility/graph_creation.py -c /media/pi/HaberServer/Crypto_Share/Binance/BTC_Balance.csv -v cash -t /media/pi/HaberServer/Crypto_Share/Binance/Databases/
+python3 /home/pi/CryptoCurrency/Utility/graph_creation.py -c /media/pi/HaberServer/Crypto_Share/Binance/ETH_Balance.csv -v cash -t /media/pi/HaberServer/Crypto_Share/Binance/Databases/
+python3 /home/pi/CryptoCurrency/Utility/graph_creation.py -c /media/pi/HaberServer/Crypto_Share/Binance/LTC_Balance.csv -v cash -t /media/pi/HaberServer/Crypto_Share/Binance/Databases/
+# Prices
+python3 /home/pi/CryptoCurrency/Utility/graph_creation.py -c /media/pi/HaberServer/Crypto_Share/Binance/BTC_Realtime.csv -v price -t /media/pi/HaberServer/Crypto_Share/Binance/Databases/
+python3 /home/pi/CryptoCurrency/Utility/graph_creation.py -c /media/pi/HaberServer/Crypto_Share/Binance/ETH_Realtime.csv -v price -t /media/pi/HaberServer/Crypto_Share/Binance/Databases/
+python3 /home/pi/CryptoCurrency/Utility/graph_creation.py -c /media/pi/HaberServer/Crypto_Share/Binance/LTC_Realtime.csv -v price -t /media/pi/HaberServer/Crypto_Share/Binance/Databases/
