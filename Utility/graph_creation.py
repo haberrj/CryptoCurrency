@@ -10,7 +10,6 @@ import os.path
 import datetime
 import csv, argparse
 import matplotlib.pyplot as plt
-from vispy.plot import Fig
 
 parser = argparse.ArgumentParser(description="Find the ideal thresholds for any currency.")
 parser.add_argument("-c", "--excel", type=str, required=True, help="The csv file that will be converted to a database")
