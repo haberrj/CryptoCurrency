@@ -240,7 +240,7 @@ def WriteTransactionInfo(direc, name, order):
     return filename
     
 if __name__ == "__main__":
-    API_key_direc = "/media/pi/HaberServer/Crypto_Share/API_Utils/Binance/"
+    API_key_direc = "/API/API_Utils/Binance/"
     actual_home = home + "Actual/"
     client = au.API_Client(API_key_direc, False)
     info, actual_cash = GetCoinInfo(client, names, actual_home) # Gets the price of the asset

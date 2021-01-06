@@ -9,5 +9,5 @@ It will have the ability to:
 Requirements:
 - Linux
 - Internet connection
-- Kraken account
+- Binance Account
 - Python 3.7 or later
