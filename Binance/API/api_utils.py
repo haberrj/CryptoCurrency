@@ -20,6 +20,8 @@ class API_Client:
     def __init__(self, direc, demo_bool):
         self.home = direc
         self.api_public, self.api_secret = self.GetAPIKeys()
+        print(self.api_public)
+        print(self.api_secret)
         self.demo = demo_bool
         self.isDemoBool()
         self.client = self.ConnectToClient()
