@@ -17,7 +17,7 @@ parser.add_argument("-n", "--name", type=str, required=True, help="The name of t
 args = parser.parse_args()
 excel = str(args.excel)
 name = str(args.name) + ".db"
-direc = "/media/pi/HaberServer/Crypto_Share/Binance/Databases/"
+direc = "/root/Crypto_Share/Binance/Databases/"
 
 def CheckIfFileExists(filename):
     # Will also remove the file if it exists
