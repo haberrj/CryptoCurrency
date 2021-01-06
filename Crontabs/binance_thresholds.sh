@@ -5,7 +5,7 @@
 # different currencies.
 # The inputs will be the thresholds themselves.
 
-cd /home/pi/CryptoCurrency/
+cd /root/CryptoCurrency/
 now=$(date)
 echo $now
 git pull
